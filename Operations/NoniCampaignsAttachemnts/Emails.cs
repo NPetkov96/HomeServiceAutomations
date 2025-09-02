@@ -13,7 +13,7 @@ using System.Text.Json;
 
 namespace Operations.NoniCampaignsAttachemnts
 {
-    public class EmailReader
+    public class Emails
     {
         public async Task ReadEmails()
         {
@@ -137,10 +137,11 @@ namespace Operations.NoniCampaignsAttachemnts
         {
             using (var db = new DataBaseContext())
             {
-                string toEmail = "nona@argent-bg.com";
+                //string toEmail = "nona@argent-bg.com";
                 //string toEmail = "nikolaypetkow96@icloud.com";
-                //string toEmail = "nonaa.atanasova@gmail.com";
+                string toEmail = "nonaa.atanasova@gmail.com";
                 string subject = "TOP SI NONI";
+
                 //string bodyText = await GenerteBodyMessage();
 
                 var settings = db.CampaignSettings.ToDictionary(s => s.Name!, s => s.Value)!;

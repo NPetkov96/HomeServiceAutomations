@@ -51,7 +51,7 @@ namespace HomeService
                         {
                             //Campaigns
                             services.AddScoped<Operations.NoniCampaignsAttachemnts.CampaignsOperations>();
-                            services.AddScoped<Operations.NoniCampaignsAttachemnts.EmailReader>();
+                            services.AddScoped<Operations.NoniCampaignsAttachemnts.Emails>();
                             services.AddScoped<Operations.NoniCampaignsAttachemnts.CreateCampaign>();
                             services.AddScoped<Operations.NoniCampaignsAttachemnts.ExtractPropertiesByEmail>();
 

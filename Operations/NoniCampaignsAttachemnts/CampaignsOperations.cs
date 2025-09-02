@@ -6,11 +6,11 @@ namespace Operations.NoniCampaignsAttachemnts
     public class CampaignsOperations
     {
         //private readonly DataBaseContext _dbContext;
-        private readonly EmailReader _emailReader;
+        private readonly Emails _emailReader;
         private readonly ExtractPropertiesByEmail _extractPropertiesByEmail;
         private readonly CreateCampaign _createCampaign;
 
-        public CampaignsOperations(EmailReader emailReader, ExtractPropertiesByEmail extractPropertiesByEmail, CreateCampaign createCampaign)
+        public CampaignsOperations(Emails emailReader, ExtractPropertiesByEmail extractPropertiesByEmail, CreateCampaign createCampaign)
         {
 
             //_dbContext = dbContext;
