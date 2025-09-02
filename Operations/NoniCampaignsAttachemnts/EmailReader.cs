@@ -15,14 +15,6 @@ namespace Operations.NoniCampaignsAttachemnts
 {
     public class EmailReader
     {
-
-        //private readonly DataBaseContext db;
-
-        public EmailReader()
-        {
-            //db = dbContext;
-        }
-
         public async Task ReadEmails()
         {
             using (var db = new DataBaseContext())
@@ -42,7 +34,7 @@ namespace Operations.NoniCampaignsAttachemnts
                     using (var stream =
                     new FileStream(settings["CredentialsPath"]!, FileMode.Open, FileAccess.Read))
                     {
-                        string credPath = "C:\\NoniApp\\WorkHardNoni\\GmailEmailReaderService\\bin\\Debug\\net9.0\\token.json\\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user";
+                        string credPath = settings["GoogleAuth2TokenResposnse"]!;
                         credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                             GoogleClientSecrets.FromStream(stream).Secrets,
                             Scopes,

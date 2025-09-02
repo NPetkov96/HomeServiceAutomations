@@ -1,6 +1,5 @@
 ﻿using DataLayer;
 using DataLayer.Models;
-using Google;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 
@@ -8,13 +7,6 @@ namespace Operations.NoniCampaignsAttachemnts
 {
     public class CreateCampaign
     {
-        //private readonly DataBaseContext db;
-
-        public CreateCampaign()
-        {
-            //db = dbContext;
-        }
-
         public async Task Create()
         {
             using (var db = new DataBaseContext())

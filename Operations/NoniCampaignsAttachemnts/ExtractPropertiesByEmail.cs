@@ -1,6 +1,5 @@
 ﻿using DataLayer;
 using DataLayer.Models;
-using Google;
 using OfficeOpenXml;
 using System.Globalization;
 
@@ -8,13 +7,6 @@ namespace Operations.NoniCampaignsAttachemnts
 {
     public class ExtractPropertiesByEmail
     {
-        //private readonly DataBaseContext db;
-
-        public ExtractPropertiesByEmail()
-        {
-            //db = dbContext;
-        }
-
         public async Task ExtractProps()
         {
             using (var db = new DataBaseContext())

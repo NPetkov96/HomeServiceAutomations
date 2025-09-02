@@ -1,6 +1,7 @@
 ﻿
 using HomeService.Services;
 using Microsoft.OpenApi.Models;
+using Operations.UpdateKPIResults;
 using System.Reflection;
 
 namespace HomeService
@@ -48,10 +49,14 @@ namespace HomeService
                     {
                         hostBuilder = Host.CreateDefaultBuilder(args).ConfigureServices((hostContext, services) =>
                         {
+                            //Campaigns
                             services.AddScoped<Operations.NoniCampaignsAttachemnts.CampaignsOperations>();
                             services.AddScoped<Operations.NoniCampaignsAttachemnts.EmailReader>();
                             services.AddScoped<Operations.NoniCampaignsAttachemnts.CreateCampaign>();
                             services.AddScoped<Operations.NoniCampaignsAttachemnts.ExtractPropertiesByEmail>();
+
+                            //KPI
+                            services.AddScoped<UpdateKPI>();
 
 
                             var hostedService = typeof(ScheduledTask);

@@ -32,7 +32,8 @@ namespace DataLayer
                 new CampaignSettings { Id = 6, Name = "MetaAccessToken", Value = "" },
                 new CampaignSettings { Id = 7, Name = "FirstClientsPage", Value = "https://graph.facebook.com/v23.0/2865723520304947/adaccounts?fields=account_id,id,name&access_token=<ACCESS_TOKEN>%0A&limit=100" },
                 new CampaignSettings { Id = 8, Name = "AccountInfomationCPC", Value = "https://graph.facebook.com/v23.0/<ACCOUNT_ID>/insights?fields=campaign_id,campaign_name,cpc,objective,actions,spend&breakdowns=publisher_platform,platform_position&date_preset=last_90d&level=campaign&access_token=<ACCESS_TOKEN>" },
-                new CampaignSettings { Id = 9, Name = "LastDateTimeKPIResult", Value = "2025-08-08-08-00-00-0" }
+                new CampaignSettings { Id = 9, Name = "LastDateTimeKPIResult", Value = "2025-08-08-08-00-00-0" },
+                new CampaignSettings { Id = 10, Name = "GoogleAuth2TokenResposnse", Value = "C:\\Users\\Nikolay Petkov\\source\\repos\\HomeService\\HomeService\\bin\\Debug\\net9.0\\token.json\\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user\\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user" }
 
             );
 
