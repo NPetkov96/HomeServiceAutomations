@@ -4,6 +4,7 @@ using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250902145730_added_MedSestriBloodTest_table")]
+    partial class added_MedSestriBloodTest_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -489,33 +492,6 @@ namespace DataLayer.Migrations
                             Id = 10,
                             Name = "GoogleAuth2TokenResposnse",
                             Value = "C:\\Users\\Nikolay Petkov\\source\\repos\\HomeService\\HomeService\\bin\\Debug\\net9.0\\token.json\\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user\\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user"
-                        });
-                });
-
-            modelBuilder.Entity("DataLayer.Models.Common.Settings", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Settings");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "LogsPath",
-                            Value = "C:\\HomeService\\Logs"
                         });
                 });
 

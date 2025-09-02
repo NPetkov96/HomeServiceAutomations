@@ -126,7 +126,8 @@ namespace Operations.NoniCampaignsAttachemnts
                 }
                 catch (Exception ex)
                 {
-                    File.AppendAllText(settings["ErrorFilePth"]!, $"[{DateTime.Now}] Грешка: {ex.Message}\n");
+                    var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
+                    File.AppendAllText(logPath, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
                 }
 
             }

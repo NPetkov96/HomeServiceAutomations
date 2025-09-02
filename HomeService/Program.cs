@@ -1,6 +1,7 @@
 ﻿
 using HomeService.Services;
 using Microsoft.OpenApi.Models;
+using Operations.BloodTetsUpdate;
 using Operations.UpdateKPIResults;
 using System.Reflection;
 
@@ -12,8 +13,6 @@ namespace HomeService
         {
             try
             {
-
-
                 var builder = WebApplication.CreateBuilder(args);
                 Configuration.Appsettings = builder.Configuration;
                 Configuration.ConnectionString = builder.Configuration.GetConnectionString("ConnectionString");
@@ -57,6 +56,9 @@ namespace HomeService
 
                             //KPI
                             services.AddScoped<UpdateKPI>();
+
+                            //Blood tests
+                            services.AddScoped<UpdateBloodTestsOperation>();
 
 
                             var hostedService = typeof(ScheduledTask);
@@ -130,7 +132,8 @@ namespace HomeService
             }
             catch (Exception ex)
             {
-                //File.WriteAllText(@"C:\Users\Nikolay Petkov\OneDrive\Desktop\New folder\error.txt", ex.StackTrace.ToString());
+                var logPath = Path.Combine("C:\\HomeService\\Logs", $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
+                File.AppendAllText(logPath, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
             }
         }
 

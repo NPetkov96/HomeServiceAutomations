@@ -59,12 +59,12 @@ namespace Operations.NoniCampaignsAttachemnts
             //    Console.WriteLine("Done");
             //}
 
-            using (var _dbContext = new DataBaseContext())
+            using (var db = new DataBaseContext())
             {
-                var settings = _dbContext.CampaignSettings.ToDictionary(s => s.Name!, s => s.Value)!;
+                var settings = db.CampaignSettings.ToDictionary(s => s.Name!, s => s.Value)!;
                 await _emailReader.ReadEmails();
 
-                if (_dbContext.CampaignEmails.Any(e => e.EmailStatus == Status.ExtractingAssets))
+                if (db.CampaignEmails.Any(e => e.EmailStatus == Status.ExtractingAssets))
                 {
                     try
                     {
@@ -74,7 +74,8 @@ namespace Operations.NoniCampaignsAttachemnts
                     }
                     catch (Exception ex)
                     {
-                        File.AppendAllText(settings["ErrorFilePth"]!, $"[{DateTime.Now}] {ex.StackTrace}\n");
+                        var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
+                        File.AppendAllText(logPath, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
                     }
                 }
             }

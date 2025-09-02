@@ -1,4 +1,5 @@
 ﻿using DataLayer.Models;
+using DataLayer.Models.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,17 +12,22 @@ namespace DataLayer
             optionsBuilder.UseSqlServer("Server=PETKOV;Database=MyDbContext;Trusted_Connection=True;TrustServerCertificate=True");
         }
 
+        public DbSet<Settings> Settings { get; set; }
         public DbSet<CampaignEmail> CampaignEmails { get; set; }
         public DbSet<CampaignSettings> CampaignSettings { get; set; }
         public DbSet<CampaignAsset> CampaignAssets { get; set; }
         public DbSet<CampaignClient> CampaignClients { get; set; }
         public DbSet<CampaignPlatform> CampaignPlatforms { get; set; }
         public DbSet<CampaignClientPlatform> CampaignClientPlatforms { get; set; }
+        public DbSet<MedSestriBloodTest> MedSestriBloodTests { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Settings>().HasData(
+                new Settings { Id = 1, Name = "LogsPath", Value = "C:\\HomeService\\Logs" }
+            );
 
             modelBuilder.Entity<CampaignSettings>().HasData(
                 new CampaignSettings { Id = 1, Name = "LastDateTimeReadEmails", Value = "2025-08-08-08-00-00-0" },

@@ -4,12 +4,12 @@ using static HomeService.Program;
 
 namespace HomeService.Services
 {
-    public class UpdateKPIResults : ScheduledTask
+    public class UpdateKPIResultsService : ScheduledTask
     {
         private readonly UpdateKPI _updateKPIResults;
 
-        public UpdateKPIResults(UpdateKPI updateKPIResults) : base(Configuration.Appsettings.GetSection("UpdateKPIResults").GetValue<string>("CronPattern"),
-                  Configuration.Appsettings.GetSection("UpdateKPIResults").GetValue<bool>("ServiceActive"))
+        public UpdateKPIResultsService(UpdateKPI updateKPIResults) : base(Configuration.Appsettings.GetSection("UpdateKPIResultsService").GetValue<string>("CronPattern"),
+                  Configuration.Appsettings.GetSection("UpdateKPIResultsService").GetValue<bool>("ServiceActive"))
         {
             _updateKPIResults = updateKPIResults;
         }
@@ -28,7 +28,8 @@ namespace HomeService.Services
                 }
                 catch (Exception ex)
                 {
-                    File.AppendAllText(settings["ErrorFilePth"]!, $"[{DateTime.Now}] Error: {ex.Message}\nInner: {ex.InnerException?.Message}\nStack: {ex.StackTrace}\n");
+                    var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
+                    File.AppendAllText(logPath, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
                 }
             }
         }
