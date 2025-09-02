@@ -1,0 +1,6 @@
+@HomeService_HostAddress = http://localhost:5099
+
+GET {{HomeService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
