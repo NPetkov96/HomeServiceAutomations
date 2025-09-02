@@ -34,7 +34,7 @@ namespace Operations.NoniCampaignsAttachemnts
                     using (var stream =
                     new FileStream(settings["CredentialsPath"]!, FileMode.Open, FileAccess.Read))
                     {
-                        string credPath = settings["GoogleAuth2TokenResposnse"]!;
+                        string credPath = "C:\\NoniApp\\WorkHardNoni\\GmailEmailReaderService\\bin\\Debug\\net9.0\\token.json\\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user";
                         credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                             GoogleClientSecrets.FromStream(stream).Secrets,
                             Scopes,
@@ -127,7 +127,6 @@ namespace Operations.NoniCampaignsAttachemnts
                 catch (Exception ex)
                 {
                     File.AppendAllText(settings["ErrorFilePth"]!, $"[{DateTime.Now}] Грешка: {ex.Message}\n");
-                    Console.WriteLine(ex.Message);
                 }
 
             }

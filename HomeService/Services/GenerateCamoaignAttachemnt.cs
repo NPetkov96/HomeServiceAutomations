@@ -1,5 +1,4 @@
-﻿using DataLayer;
-using Operations.NoniCampaignsAttachemnts;
+﻿using Operations.NoniCampaignsAttachemnts;
 using static HomeService.Program;
 
 namespace HomeService.Services
