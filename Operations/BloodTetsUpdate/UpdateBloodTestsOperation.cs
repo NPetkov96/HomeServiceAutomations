@@ -56,16 +56,16 @@ namespace Operations.BloodTetsUpdate
                             }
                             catch (Exception ex)
                             {
-                                var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
-                                File.AppendAllText(logPath, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
+                                var logPath2 = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
+                                File.AppendAllText(logPath2, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
                                 continue;
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
-                        File.AppendAllText(logPath, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
+                        var logPath1 = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
+                        File.AppendAllText(logPath1, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
                         continue;
                     }
                 }
@@ -87,6 +87,8 @@ namespace Operations.BloodTetsUpdate
                     }
                     await db.SaveChangesAsync();
                 }
+                var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
+                File.AppendAllText(logPath, $"[{DateTime.Now}] Successfully updated Bodimed blood test prices!\n");
             }
         }
 

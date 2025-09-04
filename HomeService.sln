@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\Data
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Operations", "Operations\Operations.csproj", "{4001DE3E-C2C7-4F4A-BA3D-50CA4084E0F8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeApi", "HomeApi\HomeApi.csproj", "{A968D956-6403-4F8E-BA47-DC7FB0B7F2A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4001DE3E-C2C7-4F4A-BA3D-50CA4084E0F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4001DE3E-C2C7-4F4A-BA3D-50CA4084E0F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4001DE3E-C2C7-4F4A-BA3D-50CA4084E0F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A968D956-6403-4F8E-BA47-DC7FB0B7F2A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A968D956-6403-4F8E-BA47-DC7FB0B7F2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A968D956-6403-4F8E-BA47-DC7FB0B7F2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A968D956-6403-4F8E-BA47-DC7FB0B7F2A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,6 @@
 ﻿using DataLayer.Models;
 using DataLayer.Models.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DataLayer
 {

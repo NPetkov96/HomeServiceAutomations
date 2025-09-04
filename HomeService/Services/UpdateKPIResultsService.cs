@@ -24,7 +24,9 @@ namespace HomeService.Services
                     await _updateKPIResults.Update();
 
                     var newTime = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-f");
-                    File.AppendAllText(settings["ErrorFilePth"]!, $"[{DateTime.Now}] Successfully updated KPI!\n");
+
+                    var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
+                    File.AppendAllText(logPath, $"[{DateTime.Now}] Successfully updated KPI!\n");
                 }
                 catch (Exception ex)
                 {
