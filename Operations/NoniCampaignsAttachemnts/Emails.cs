@@ -1,5 +1,6 @@
 ﻿using DataLayer;
 using DataLayer.Models;
+using Extensions;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
@@ -126,8 +127,7 @@ namespace Operations.NoniCampaignsAttachemnts
                 }
                 catch (Exception ex)
                 {
-                    var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
-                    File.AppendAllText(logPath, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
+                    WriteLog.Log(ex.Message, ex.StackTrace!);
                 }
 
             }
@@ -204,7 +204,7 @@ namespace Operations.NoniCampaignsAttachemnts
                         await service.Users.Messages.Send(message, "me").ExecuteAsync();
                     }
 
-                    Console.WriteLine($"Email send successful - {DateTime.Now.ToString("HH-mm-ss")}");
+                    WriteLog.Log("Email send successful");
                     record.IsCompleted = true;
                     record.EmailStatus = Status.Completed;
                     db.SaveChanges();
@@ -222,7 +222,7 @@ namespace Operations.NoniCampaignsAttachemnts
                 model = "gpt-4o",
                 messages = new[]
                        {
-                new { role = "user", content = "Генерирай ми Body на имейл, което да съдържа кратък любовен цитат и кратък виц.Добави накрая: С обич Ники" }
+                new { role = "user", content = "Генерирай ми Body на имейл" }
             }
             };
 

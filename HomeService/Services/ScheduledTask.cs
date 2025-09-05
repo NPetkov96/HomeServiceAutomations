@@ -1,4 +1,5 @@
-﻿using NCrontab;
+﻿using Extensions;
+using NCrontab;
 using System.ComponentModel;
 
 namespace HomeService.Services
@@ -40,7 +41,7 @@ namespace HomeService.Services
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine(ex.StackTrace);
+                            WriteLog.Log(ex.Message, ex.StackTrace!);
                         }
                         this.nextRun = schedule.GetNextOccurrence(DateTime.Now);
                         Console.WriteLine(nextRun.ToString());

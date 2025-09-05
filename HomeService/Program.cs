@@ -1,4 +1,5 @@
 ﻿using DataLayer;
+using Extensions;
 using HomeService.Services;
 using Operations.BloodTetsUpdate;
 using Operations.UpdateKPIResults;
@@ -52,10 +53,6 @@ namespace HomeService
                             MethodInfo genericMethod = method.MakeGenericMethod(taskType);
                             genericMethod.Invoke(services, new object[] { services });
                         }
-                        else
-                        {
-                            Console.WriteLine("AddHostService not found");
-                        }
                     }
                 });
 
@@ -67,8 +64,7 @@ namespace HomeService
             }
             catch (Exception ex)
             {
-                var logPath = Path.Combine("C:\\HomeService\\Logs", $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
-                File.AppendAllText(logPath, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
+                WriteLog.Log(ex.Message, ex.StackTrace!);
             }
         }
 

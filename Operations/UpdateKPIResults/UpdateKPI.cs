@@ -1,5 +1,6 @@
 ﻿using DataLayer;
 using DataLayer.Models;
+using Extensions;
 using System.Text.Json;
 
 namespace Operations.UpdateKPIResults
@@ -122,8 +123,7 @@ namespace Operations.UpdateKPIResults
                 }
                 catch (Exception ex)
                 {
-                    var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
-                    File.AppendAllText(logPath, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
+                    WriteLog.Log(ex.Message,ex.StackTrace!);
                 }
             }
         }

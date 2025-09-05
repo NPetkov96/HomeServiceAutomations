@@ -1,4 +1,5 @@
 ﻿using DataLayer;
+using Extensions;
 using Operations.UpdateKPIResults;
 using static HomeService.Program;
 
@@ -16,23 +17,14 @@ namespace HomeService.Services
 
         protected override async Task ExecuteTask()
         {
-            using (var db = new DataBaseContext())
+            try
             {
-                var settings = db.CampaignSettings.ToDictionary(s => s.Name!, s => s.Value)!;
-                try
-                {
-                    await _updateKPIResults.Update();
-
-                    var newTime = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-f");
-
-                    var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
-                    File.AppendAllText(logPath, $"[{DateTime.Now}] Successfully updated KPI!\n");
-                }
-                catch (Exception ex)
-                {
-                    var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
-                    File.AppendAllText(logPath, $"[{DateTime.Now}] Грешка: {ex.Message}\n {ex.StackTrace}\n");
-                }
+                await _updateKPIResults.Update();
+                WriteLog.Log("Successfully updated KPI!");
+            }
+            catch (Exception ex)
+            {
+                WriteLog.Log(ex.Message, ex.StackTrace!);
             }
         }
     }
