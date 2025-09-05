@@ -32,8 +32,7 @@ namespace Operations.NoniCampaignsAttachemnts
                     foreach (var record in records)
                     {
                         int assets = record!.Assets.Count;
-                        var template = $"C:\\NoniApp\\WorkHardNoni\\Templates\\Template-{assets}.xlsx";
-
+                        var template = $"C:\\HomeService\\Campaigns\\CampaignTemplates\\Template-{assets}.xlsx";
                         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 
