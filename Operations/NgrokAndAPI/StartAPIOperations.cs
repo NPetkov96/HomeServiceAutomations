@@ -1,7 +1,6 @@
 ﻿using DataLayer;
 using Extensions;
 using System.Diagnostics;
-using System.Security.Cryptography;
 
 namespace Operations.NgrokAndAPI
 {
@@ -13,8 +12,8 @@ namespace Operations.NgrokAndAPI
         {
             var startInfo = new ProcessStartInfo
             {
-                FileName = @"C:\HomeService\Version_Current\Api\publish\HomeApi.exe",
-                WorkingDirectory = @"C:\HomeService\Version_Current\Api\publish",
+                FileName = @"C:\HomeService\Version_Current\Api\HomeApi.exe",
+                WorkingDirectory = @"C:\HomeService\Version_Current\Api",
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,

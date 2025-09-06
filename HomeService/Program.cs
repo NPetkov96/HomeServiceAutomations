@@ -40,7 +40,8 @@ namespace HomeService
                     //Ngrok
                     services.AddScoped<NgrokOperations>();
                     services.AddScoped<StartAPIOperations>();
-                    services.AddHostedService<StartNgrokAndAPIService>();
+                    //services.AddHostedService<StartNgrokAndAPIService>();
+                    services.AddHostedService<StоpNgrokAndAPIService>();
 
 
 
