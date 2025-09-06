@@ -25,7 +25,11 @@ namespace DataLayer
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Settings>().HasData(
-                new Settings { Id = 1, Name = "LogsPath", Value = "C:\\HomeService\\Logs" }
+                new Settings { Id = 1, Name = "LogsPath", Value = "C:\\HomeService\\Logs" },
+                new Settings { Id = 2, Name = "NgrokDNS", Value = "" },
+                new Settings { Id = 3, Name = "PortHTTP", Value = "" },
+                new Settings { Id = 4, Name = "PortHTTPs", Value = "" },
+                new Settings { Id = 5, Name = "PortId", Value = "" }
             );
 
             modelBuilder.Entity<CampaignSettings>().HasData(

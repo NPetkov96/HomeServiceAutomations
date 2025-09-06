@@ -2,6 +2,8 @@
 using Extensions;
 using HomeService.Services;
 using Operations.BloodTetsUpdate;
+using Operations.Ngrok;
+using Operations.NgrokAndAPI;
 using Operations.UpdateKPIResults;
 using System.Reflection;
 
@@ -35,6 +37,12 @@ namespace HomeService
                     //Blood tests
                     services.AddScoped<UpdateBloodTestsOperation>();
 
+                    //Ngrok
+                    services.AddScoped<NgrokOperations>();
+                    services.AddScoped<StartAPIOperations>();
+                    services.AddHostedService<StartNgrokAndAPIService>();
+
+
 
                     var hostedService = typeof(ScheduledTask);
                     var assembly = Assembly.GetExecutingAssembly();
@@ -57,7 +65,12 @@ namespace HomeService
                 });
 
                 hostBuilder?.UseWindowsService().Build().Run();
-               
+
+                builder.WebHost.ConfigureKestrel(options =>
+                {
+                    options.ListenLocalhost(5001);
+                });
+
                 var app = builder.Build();
 
                 app.Run();

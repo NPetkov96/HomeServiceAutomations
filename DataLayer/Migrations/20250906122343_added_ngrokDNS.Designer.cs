@@ -4,6 +4,7 @@ using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250906122343_added_ngrokDNS")]
+    partial class added_ngrokDNS
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -521,24 +524,6 @@ namespace DataLayer.Migrations
                         {
                             Id = 2,
                             Name = "NgrokDNS",
-                            Value = ""
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "PortHTTP",
-                            Value = ""
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "PortHTTPs",
-                            Value = ""
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "PortId",
                             Value = ""
                         });
                 });
