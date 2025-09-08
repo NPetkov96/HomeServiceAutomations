@@ -22,6 +22,7 @@ namespace HomeApi.Controllers
         {
             return await _context.MedSestriBloodTests
                 .OrderByDescending(x => x.HasPriority)
+                .ThenBy(x => x.Name)
                 .ToListAsync();
         }
 
@@ -29,10 +30,10 @@ namespace HomeApi.Controllers
         public async Task<List<MedSestriPatientsDTO>> GetAllPatientsHistoryAsync()
         {
             var patients = await _context.MedSestriPatients
-        .OrderByDescending(p => p.Date)
-        .Include(p => p.PatientBloodTests)         // assuming PatientBloodTests is collection of linking entity
-        .ThenInclude(pt => pt.BloodTest)           // then include the actual BloodTest
-        .ToListAsync();
+                .OrderByDescending(p => p.Date)
+                .Include(p => p.PatientBloodTests)
+                .ThenInclude(pt => pt.BloodTest)
+                .ToListAsync();
 
             var patientsDto = patients.Select(patient => new MedSestriPatientsDTO
             {
@@ -46,7 +47,8 @@ namespace HomeApi.Controllers
                     Name = pb.BloodTest.Name,
                     BngPrice = pb.BloodTest.BngPrice,
                     EuroPrice = pb.BloodTest.EuroPrice
-                }).ToList()
+                })
+                .ToList()
             }).ToList();
 
             return patientsDto;
@@ -143,7 +145,7 @@ namespace HomeApi.Controllers
         {
             var result = await _context.MedSestriCatheters
                 .Where(p => p.IsChecked == false)
-                .OrderByDescending(c => c.Date)
+                .OrderBy(d => d.Date)
                 .ToListAsync();
 
             return result;
