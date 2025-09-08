@@ -21,6 +21,7 @@ namespace DataLayer
         public DbSet<MedSestriBloodTest> MedSestriBloodTests { get; set; }
         public DbSet<MedSestriPatient> MedSestriPatients { get; set; }
         public DbSet<MedSestriPatientBloodTest> MedSestriPatientsBloodTests { get; set; }
+        public DbSet<MedSestriCatheter> MedSestriCatheters { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

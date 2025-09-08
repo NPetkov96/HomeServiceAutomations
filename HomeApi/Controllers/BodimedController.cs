@@ -130,5 +130,33 @@ namespace HomeApi.Controllers
             _context.MedSestriPatients.Remove(patient!);
             await _context.SaveChangesAsync();
         }
+
+        [HttpPost("createCatheterAppointment")]
+        public async Task CreateCatheterAppointment([FromBody] MedSestriCatheter model)
+        {
+            await _context.MedSestriCatheters.AddAsync(model);
+            await _context.SaveChangesAsync();
+        }
+
+        [HttpGet("getAllCatheterAppointments")]
+        public async Task<List<MedSestriCatheter>> GetAllCatheterAppointments()
+        {
+            var result = await _context.MedSestriCatheters
+                .Where(p => p.IsChecked == false)
+                .OrderByDescending(c => c.Date)
+                .ToListAsync();
+
+            return result;
+        }
+
+        [HttpPut("checkCatheterAppointment")]
+        public async Task CheckCatheterAppointment([FromBody] MedSestriCatheter model)
+        {
+            var entity = _context.MedSestriCatheters
+                .FirstOrDefault(c => c.ClientName == model.ClientName && c.Date == model.Date);
+
+            entity.IsChecked = true;
+            await _context.SaveChangesAsync();
+        }
     }
 }
