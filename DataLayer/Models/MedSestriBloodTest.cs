@@ -9,5 +9,7 @@ namespace DataLayer.Models
         public string Name { get; set; }
         public double BngPrice { get; set; }
         public double EuroPrice { get; set; }
+        public bool HasPriority { get; set; } = false;
+        public List<MedSestriPatientBloodTest> PatientBloodTests { get; set; } = new();
     }
 }

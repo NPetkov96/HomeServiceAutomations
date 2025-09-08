@@ -17,7 +17,7 @@ namespace Operations.Ngrok
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "ngrok.exe",
-                    Arguments = $"http https://localhost:{httpsPort}",
+                    Arguments = $"http https://localhost:{httpsPort} --url homeserver.ngrok.pro",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true

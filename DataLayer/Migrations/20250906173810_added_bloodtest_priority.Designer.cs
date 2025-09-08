@@ -4,6 +4,7 @@ using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250906173810_added_bloodtest_priority")]
+    partial class added_bloodtest_priority
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -567,70 +570,6 @@ namespace DataLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MedSestriBloodTests");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 999,
-                            BngPrice = 0.0,
-                            EuroPrice = 0.0,
-                            HasPriority = true,
-                            Name = "НЗОК"
-                        });
-                });
-
-            modelBuilder.Entity("DataLayer.Models.MedSestriPatient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2")
-                        .HasAnnotation("Relational:JsonPropertyName", "date");
-
-                    b.Property<string>("EGN")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "egn");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "fullName");
-
-                    b.Property<string>("Note")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "note");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "phoneNumber");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MedSestriPatients");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.MedSestriPatientBloodTest", b =>
-                {
-                    b.Property<int>("PatientId")
-                        .HasColumnType("int")
-                        .HasColumnOrder(0);
-
-                    b.Property<int>("BloodTestId")
-                        .HasColumnType("int")
-                        .HasColumnOrder(1);
-
-                    b.HasKey("PatientId", "BloodTestId");
-
-                    b.HasIndex("BloodTestId");
-
-                    b.ToTable("MedSestriPatientsBloodTests");
                 });
 
             modelBuilder.Entity("DataLayer.Models.CampaignAsset", b =>
@@ -659,25 +598,6 @@ namespace DataLayer.Migrations
                     b.Navigation("Platform");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.MedSestriPatientBloodTest", b =>
-                {
-                    b.HasOne("DataLayer.Models.MedSestriBloodTest", "BloodTest")
-                        .WithMany("PatientBloodTests")
-                        .HasForeignKey("BloodTestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DataLayer.Models.MedSestriPatient", "Patient")
-                        .WithMany("PatientBloodTests")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BloodTest");
-
-                    b.Navigation("Patient");
-                });
-
             modelBuilder.Entity("DataLayer.Models.CampaignClient", b =>
                 {
                     b.Navigation("ClientPlatforms");
@@ -691,16 +611,6 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("DataLayer.Models.CampaignPlatform", b =>
                 {
                     b.Navigation("ClientPlatforms");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.MedSestriBloodTest", b =>
-                {
-                    b.Navigation("PatientBloodTests");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.MedSestriPatient", b =>
-                {
-                    b.Navigation("PatientBloodTests");
                 });
 #pragma warning restore 612, 618
         }

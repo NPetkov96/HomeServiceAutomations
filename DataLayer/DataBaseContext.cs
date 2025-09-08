@@ -19,11 +19,18 @@ namespace DataLayer
         public DbSet<CampaignPlatform> CampaignPlatforms { get; set; }
         public DbSet<CampaignClientPlatform> CampaignClientPlatforms { get; set; }
         public DbSet<MedSestriBloodTest> MedSestriBloodTests { get; set; }
+        public DbSet<MedSestriPatient> MedSestriPatients { get; set; }
+        public DbSet<MedSestriPatientBloodTest> MedSestriPatientsBloodTests { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<MedSestriBloodTest>().HasData(
+               new MedSestriBloodTest { Id = 999, Name = "НЗОК", BngPrice = 0, EuroPrice = 0, HasPriority = true }
+           );
+
             modelBuilder.Entity<Settings>().HasData(
                 new Settings { Id = 1, Name = "LogsPath", Value = "C:\\HomeService\\Logs" },
                 new Settings { Id = 2, Name = "NgrokDNS", Value = "" },
@@ -96,6 +103,18 @@ namespace DataLayer
                new CampaignClient { Id = 36, Name = "AYA Estate" }
             );
 
+            modelBuilder.Entity<MedSestriPatientBloodTest>()
+        .HasKey(pt => new { pt.PatientId, pt.BloodTestId });
+
+            modelBuilder.Entity<MedSestriPatientBloodTest>()
+                .HasOne(pt => pt.Patient)
+                .WithMany(p => p.PatientBloodTests)
+                .HasForeignKey(pt => pt.PatientId);
+
+            modelBuilder.Entity<MedSestriPatientBloodTest>()
+                .HasOne(pt => pt.BloodTest)
+                .WithMany(bt => bt.PatientBloodTests)
+                .HasForeignKey(pt => pt.BloodTestId);
         }
     }
 }

@@ -26,8 +26,7 @@ namespace HomeService.Services
                 {
                     var url = db.Settings.FirstOrDefault(w => w.Name == "NgrokDNS")!.Value;
                     var client = new HttpClient();
-                    var resposne = await client.GetAsync($"{url}/Bodimed");
-
+                    var resposne = await client.GetAsync($"{url}/api/Bodimed/allbloodtests");
                     if (resposne.IsSuccessStatusCode)
                     {
                         await _ngrok.Kill();

@@ -12,7 +12,12 @@ namespace HomeApi
 
             builder.Services.AddScoped<DataBaseContext>();
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never;
+                });
+
             builder.Services.AddOpenApi();
 
             builder.Services.AddCors(opt =>
