@@ -53,7 +53,6 @@ namespace HomeService.Services
             };
             backgroundWorker.RunWorkerAsync();
             return Task.CompletedTask;
-
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

@@ -1,6 +1,7 @@
 ﻿using DataLayer;
 using DataLayer.Models;
 using DataLayer.Models.DTOs;
+using Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -92,6 +93,7 @@ namespace HomeApi.Controllers
                         BloodTestId = test.Id
                     });
                 }
+                WriteLog.Log($"Patient {model.FullName} updated with new blood tests.");
             }
             else
             {
@@ -111,6 +113,7 @@ namespace HomeApi.Controllers
                 };
 
                 await _context.MedSestriPatients.AddAsync(newPatient);
+                WriteLog.Log($"New patient {model.FullName} created with blood tests.");
             }
 
             await _context.SaveChangesAsync();
@@ -131,6 +134,7 @@ namespace HomeApi.Controllers
 
             _context.MedSestriPatients.Remove(patient!);
             await _context.SaveChangesAsync();
+            WriteLog.Log($"Patient {patient!.FullName} deleted.");
         }
 
         [HttpPost("createCatheterAppointment")]
@@ -138,6 +142,7 @@ namespace HomeApi.Controllers
         {
             await _context.MedSestriCatheters.AddAsync(model);
             await _context.SaveChangesAsync();
+            WriteLog.Log($"New catheter appointment for {model.ClientName} on {model.Date} created.");
         }
 
         [HttpGet("getAllCatheterAppointments")]
@@ -159,6 +164,7 @@ namespace HomeApi.Controllers
 
             entity.IsChecked = true;
             await _context.SaveChangesAsync();
+            WriteLog.Log($"Catheter appointment for {model.ClientName} on {model.Date} checked.");
         }
     }
 }
