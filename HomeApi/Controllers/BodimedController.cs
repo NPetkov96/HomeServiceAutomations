@@ -160,11 +160,24 @@ namespace HomeApi.Controllers
         public async Task CheckCatheterAppointment([FromBody] MedSestriCatheter model)
         {
             var entity = _context.MedSestriCatheters
-                .FirstOrDefault(c => c.ClientName == model.ClientName && c.Date == model.Date);
+                .FirstOrDefault(c => c.Id == model.Id);
 
             entity.IsChecked = true;
             await _context.SaveChangesAsync();
             WriteLog.Log($"Catheter appointment for {model.ClientName} on {model.Date} checked.");
+        }
+
+        [HttpPut("updateCatheterAppointment")]
+        public async Task UpdateCatheterAppointment([FromBody] MedSestriCatheter model)
+        {
+            var entity = _context.MedSestriCatheters
+                .FirstOrDefault(c => c.Id == model.Id);
+
+            entity.ClientName = model.ClientName;
+            entity.PhoneNumber = model.PhoneNumber;
+            entity.Date = model.Date;
+            entity.Address = model.Address;
+            await _context.SaveChangesAsync();
         }
     }
 }
