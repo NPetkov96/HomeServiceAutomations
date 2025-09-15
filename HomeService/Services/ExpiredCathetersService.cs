@@ -1,6 +1,6 @@
-﻿
-using DataLayer;
+﻿using DataLayer;
 using Extensions;
+using Operations.Catheters;
 using static HomeService.Program;
 
 namespace HomeService.Services
@@ -8,10 +8,12 @@ namespace HomeService.Services
     public class ExpiredCathetersService : ScheduledTask
     {
 
-        public ExpiredCathetersService() : base(Configuration.Appsettings.GetSection("ExpiredCathetersService").GetValue<string>("CronPattern"),
+        private readonly SendCatheterNotificationOperation _sendCatheterNotificationOperation;
+
+        public ExpiredCathetersService(SendCatheterNotificationOperation sendCatheterNotificationOperation) : base(Configuration.Appsettings.GetSection("ExpiredCathetersService").GetValue<string>("CronPattern"),
                   Configuration.Appsettings.GetSection("ExpiredCathetersService").GetValue<bool>("ServiceActive"))
         {
-
+            _sendCatheterNotificationOperation = sendCatheterNotificationOperation;
         }
 
         protected async override Task ExecuteTask()
@@ -32,6 +34,8 @@ namespace HomeService.Services
                         {
                             catheter.IsOverdue = true;
                             db.SaveChanges();
+
+                            await _sendCatheterNotificationOperation.Send(catheter);
                         }
                     }
                 }

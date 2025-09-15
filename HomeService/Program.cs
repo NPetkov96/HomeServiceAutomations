@@ -2,6 +2,7 @@
 using Extensions;
 using HomeService.Services;
 using Operations.BloodTetsUpdate;
+using Operations.Catheters;
 using Operations.Ngrok;
 using Operations.NgrokAndAPI;
 using Operations.UpdateKPIResults;
@@ -42,7 +43,8 @@ namespace HomeService
                     services.AddScoped<StartAPIOperations>();
                     services.AddHostedService<NgrokAndAPIService>();
 
-
+                    //Catheters
+                    services.AddScoped<SendCatheterNotificationOperation>();
 
                     var hostedService = typeof(ScheduledTask);
                     var assembly = Assembly.GetExecutingAssembly();

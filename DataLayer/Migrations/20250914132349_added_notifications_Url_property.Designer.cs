@@ -4,6 +4,7 @@ using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250914132349_added_notifications_Url_property")]
+    partial class added_notifications_Url_property
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,7 +77,7 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("CampaignEmailId");
 
-                    b.ToTable("CampaignAssets", (string)null);
+                    b.ToTable("CampaignAssets");
                 });
 
             modelBuilder.Entity("DataLayer.Models.CampaignClient", b =>
@@ -91,7 +94,7 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CampaignClients", (string)null);
+                    b.ToTable("CampaignClients");
 
                     b.HasData(
                         new
@@ -299,7 +302,7 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("PlatformId");
 
-                    b.ToTable("CampaignClientPlatforms", (string)null);
+                    b.ToTable("CampaignClientPlatforms");
                 });
 
             modelBuilder.Entity("DataLayer.Models.CampaignEmail", b =>
@@ -338,7 +341,7 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CampaignEmails", (string)null);
+                    b.ToTable("CampaignEmails");
                 });
 
             modelBuilder.Entity("DataLayer.Models.CampaignPlatform", b =>
@@ -361,7 +364,7 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CampaignPlatforms", (string)null);
+                    b.ToTable("CampaignPlatforms");
 
                     b.HasData(
                         new
@@ -427,7 +430,7 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CampaignSettings", (string)null);
+                    b.ToTable("CampaignSettings");
 
                     b.HasData(
                         new
@@ -508,7 +511,7 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Settings", (string)null);
+                    b.ToTable("Settings");
 
                     b.HasData(
                         new
@@ -584,7 +587,7 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MedSestriBloodTests", (string)null);
+                    b.ToTable("MedSestriBloodTests");
 
                     b.HasData(
                         new
@@ -628,7 +631,7 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MedSestriCatheters", (string)null);
+                    b.ToTable("MedSestriCatheters");
                 });
 
             modelBuilder.Entity("DataLayer.Models.MedSestriPatient", b =>
@@ -660,7 +663,7 @@ namespace DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MedSestriPatients", (string)null);
+                    b.ToTable("MedSestriPatients");
                 });
 
             modelBuilder.Entity("DataLayer.Models.MedSestriPatientBloodTest", b =>
@@ -677,7 +680,7 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("BloodTestId");
 
-                    b.ToTable("MedSestriPatientsBloodTests", (string)null);
+                    b.ToTable("MedSestriPatientsBloodTests");
                 });
 
             modelBuilder.Entity("DataLayer.Models.CampaignAsset", b =>

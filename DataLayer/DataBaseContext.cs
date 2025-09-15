@@ -2,6 +2,7 @@
 using DataLayer.Models.Common;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace DataLayer
 {
     public class DataBaseContext : DbContext
@@ -37,7 +38,10 @@ namespace DataLayer
                 new Settings { Id = 2, Name = "NgrokDNS", Value = "" },
                 new Settings { Id = 3, Name = "PortHTTP", Value = "" },
                 new Settings { Id = 4, Name = "PortHTTPs", Value = "" },
-                new Settings { Id = 5, Name = "PortId", Value = "" }
+                new Settings { Id = 5, Name = "PortId", Value = "" },
+                new Settings { Id = 6, Name = "NotificationOAuth2Token", Value = "" },
+                new Settings { Id = 7, Name = "NotificationJSONFilePath", Value = "C:\\HomeService\\Files\\Notifications.json" },
+                new Settings { Id = 8, Name = "NotificationUrl", Value = "https://fcm.googleapis.com/v1/projects/medsestri-bg/messages:send" }
             );
 
             modelBuilder.Entity<CampaignSettings>().HasData(
