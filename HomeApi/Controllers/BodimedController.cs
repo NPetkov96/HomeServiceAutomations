@@ -23,7 +23,7 @@ namespace HomeApi.Controllers
         {
             return await _context.MedSestriBloodTests
                 .OrderByDescending(x => x.HasPriority)
-                .ThenBy(x => x.Name)
+                .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 

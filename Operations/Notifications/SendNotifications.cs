@@ -13,7 +13,7 @@ namespace Operations.Notifications
 
         public static async Task Send(NotificationBody body)
         {
-            await CreateAsync();
+            await CreateTokenAsync();
 
             using (var db = new DataBaseContext())
             using (var httpClient = new HttpClient())
@@ -33,7 +33,7 @@ namespace Operations.Notifications
             }
         }
 
-        private static async Task CreateAsync()
+        private static async Task CreateTokenAsync()
         {
             using (var db = new DataBaseContext())
             {
