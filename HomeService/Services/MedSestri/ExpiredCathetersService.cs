@@ -3,7 +3,7 @@ using Extensions;
 using Operations.Catheters;
 using static HomeService.Program;
 
-namespace HomeService.Services
+namespace HomeService.Services.MedSestri
 {
     public class ExpiredCathetersService : ScheduledTask
     {
@@ -25,7 +25,7 @@ namespace HomeService.Services
                 using (var db = new DataBaseContext())
                 {
                     var expiredCatheters = db.MedSestriCatheters
-                        .Where(c => c.Date <= mounthAgo)
+                        .Where(c => c.Date <= mounthAgo && c.IsChecked == false)
                         .ToList();
 
                     if (expiredCatheters.Any())

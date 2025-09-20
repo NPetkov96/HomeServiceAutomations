@@ -1,7 +1,7 @@
 ﻿using Operations.NoniCampaignsAttachemnts;
 using static HomeService.Program;
 
-namespace HomeService.Services
+namespace HomeService.Services.NoniCampaigns
 {
     public class GenerateCampaignAttachemntService : ScheduledTask
     {

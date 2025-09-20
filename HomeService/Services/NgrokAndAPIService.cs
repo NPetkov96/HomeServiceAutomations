@@ -20,37 +20,37 @@ namespace HomeService.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            using (var db = new DataBaseContext())
-            {
-                int id = await _startAPIOperations.Run();
-                db.Settings.FirstOrDefault(w => w.Name == "PortId")!.Value = id.ToString();
-                db.SaveChanges();
-                await _startAPIOperations.GetListeningPortForProcess(id);
+            //using (var db = new DataBaseContext())
+            //{
+            //    int id = await _startAPIOperations.Run();
+            //    db.Settings.FirstOrDefault(w => w.Name == "PortId")!.Value = id.ToString();
+            //    db.SaveChanges();
+            //    await _startAPIOperations.GetListeningPortForProcess(id);
 
-                await _ngrok.Run();
-            }
+            //    await _ngrok.Run();
+            //}
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            try
-            {
-                using (var db = new DataBaseContext())
-                {
+            //try
+            //{
+            //    using (var db = new DataBaseContext())
+            //    {
 
-                    var portId = db.Settings.FirstOrDefault(w => w.Name == "PortId")!.Value;
-                    if (portId != null && int.TryParse(portId, out int pid))
-                    {
-                        await _startAPIOperations.Kill(pid);
-                        await _ngrok.Kill();
-                        WriteLog.Log("API STOPPED !");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                WriteLog.Log(ex.Message, ex.StackTrace!);
-            }
+            //        var portId = db.Settings.FirstOrDefault(w => w.Name == "PortId")!.Value;
+            //        if (portId != null && int.TryParse(portId, out int pid))
+            //        {
+            //            await _startAPIOperations.Kill(pid);
+            //            await _ngrok.Kill();
+            //            WriteLog.Log("API STOPPED !");
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    WriteLog.Log(ex.Message, ex.StackTrace!);
+            //}
         }
     }
 }

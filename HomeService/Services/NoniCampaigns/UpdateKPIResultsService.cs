@@ -3,7 +3,7 @@ using Extensions;
 using Operations.UpdateKPIResults;
 using static HomeService.Program;
 
-namespace HomeService.Services
+namespace HomeService.Services.NoniCampaigns
 {
     public class UpdateKPIResultsService : ScheduledTask
     {

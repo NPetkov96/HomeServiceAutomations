@@ -2,7 +2,7 @@
 using Operations.UpdateKPIResults;
 using static HomeService.Program;
 
-namespace HomeService.Services
+namespace HomeService.Services.MedSestri
 {
     public class MedSestriBloodTestsUpdateService : ScheduledTask
     {
