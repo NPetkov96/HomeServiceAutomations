@@ -73,10 +73,15 @@ namespace Operations.NoniCampaignsAttachemnts
                             {
                                 CampaignAsset asset = recordAssets![assetCounter++];
 
-                                var currentFee = cleintsPlatforms
-                                .FirstOrDefault(c => c.Client.Name.ToString().Replace(" ", "").ToLower() == asset.Client.ToString().Replace(" ", "").ToLower() &&
-                                                c.Platform.Name.ToString().Replace(" ", "").ToLower() == asset.Platform!.ToString().Replace(" ", "").ToLower())!.PercentFee;
 
+                                var normalizedClientName = asset.Client?.ToString()?.Replace(" ", "").ToLower();
+                                var normalizedPlatformName = asset.Platform?.ToString()?.Replace(" ", "").ToLower();
+
+                                var currentFee = cleintsPlatforms
+                                    .FirstOrDefault(c =>
+                                        c.Client.Name.Replace(" ", "").ToLower() == normalizedClientName &&
+                                        c.Platform.Name.Replace(" ", "").ToLower() == normalizedPlatformName)
+                                    ?.PercentFee ?? 0;
 
                                 var currentPlatform = platforms.FirstOrDefault(p => p.Name == asset.Platform);
                                 string kpi = null;
