@@ -1,5 +1,6 @@
 ﻿using DataLayer.Models;
 using DataLayer.Models.Common;
+using DataLayer.Models.ImotBg;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -23,6 +24,8 @@ namespace DataLayer
         public DbSet<MedSestriPatient> MedSestriPatients { get; set; }
         public DbSet<MedSestriPatientBloodTest> MedSestriPatientsBloodTests { get; set; }
         public DbSet<MedSestriCatheter> MedSestriCatheters { get; set; }
+        public DbSet<ImotBgApartment> ImotBgApartments { get; set; }
+        public DbSet<ImotBgSettings> ImotBgSettings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -55,7 +58,6 @@ namespace DataLayer
                 new CampaignSettings { Id = 8, Name = "AccountInfomationCPC", Value = "https://graph.facebook.com/v23.0/<ACCOUNT_ID>/insights?fields=campaign_id,campaign_name,cpc,objective,actions,spend&breakdowns=publisher_platform,platform_position&date_preset=last_90d&level=campaign&access_token=<ACCESS_TOKEN>" },
                 new CampaignSettings { Id = 9, Name = "LastDateTimeKPIResult", Value = "2025-08-08-08-00-00-0" },
                 new CampaignSettings { Id = 10, Name = "GoogleAuth2TokenResposnse", Value = "C:\\Users\\Nikolay Petkov\\source\\repos\\HomeService\\HomeService\\bin\\Debug\\net9.0\\token.json\\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user\\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user" }
-
             );
 
             modelBuilder.Entity<CampaignPlatform>().HasData(
@@ -107,6 +109,11 @@ namespace DataLayer
                new CampaignClient { Id = 35, Name = "Pitagor School" },
                new CampaignClient { Id = 36, Name = "AYA Estate" }
             );
+
+            modelBuilder.Entity<ImotBgSettings>().HasData(
+               new ImotBgSettings { Id = 1, Name = "SerachNeighbour", Value = "mladost-1,mladost-2" },
+               new ImotBgSettings { Id = 2, Name = "SerachCity", Value = "sofiya" }
+           );
 
             modelBuilder.Entity<MedSestriPatientBloodTest>()
         .HasKey(pt => new { pt.PatientId, pt.BloodTestId });
