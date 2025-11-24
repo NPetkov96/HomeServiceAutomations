@@ -4,6 +4,7 @@ using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20251124181641_added_construction_imotbg")]
+    partial class added_construction_imotbg
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -660,18 +663,6 @@ namespace DataLayer.Migrations
                             Id = 3,
                             Name = "BaseURL",
                             Value = "https://www.imot.bg/obiavi/prodazhbi/grad-#CITY#/#CURRENTNEIGHBOURHOOD#/#CONSTRUCTION#"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "ConstructionType",
-                            Value = "PANEL,TUHLA,EPK"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "SkippingTitleWords",
-                            Value = "офис,ателие,таван,фабрика,завод,магазин,фитнес,заведение,самостоятелна,сграда,многостаен,мезонет,търговски,комплекс,къща,склад"
                         });
                 });
 

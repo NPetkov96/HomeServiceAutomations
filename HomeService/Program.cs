@@ -48,7 +48,8 @@ namespace HomeService
                     services.AddScoped<SendCatheterNotificationOperation>();
 
                     //ImotBg
-                    services.AddScoped<ImotBgOperations>();
+                    services.AddScoped<ImotBgScraping>();
+                    services.AddScoped<ImotBgValidation>();
 
                     var hostedService = typeof(ScheduledTask);
                     var assembly = Assembly.GetExecutingAssembly();

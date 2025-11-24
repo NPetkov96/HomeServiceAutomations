@@ -4,6 +4,7 @@ using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    partial class DataBaseContextModelSnapshot : ModelSnapshot
+    [Migration("20251123104106_added_Date_Error_Nullable_properties")]
+    partial class added_Date_Error_Nullable_properties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -578,9 +581,6 @@ namespace DataLayer.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Construction")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
 
@@ -659,19 +659,7 @@ namespace DataLayer.Migrations
                         {
                             Id = 3,
                             Name = "BaseURL",
-                            Value = "https://www.imot.bg/obiavi/prodazhbi/grad-#CITY#/#CURRENTNEIGHBOURHOOD#/#CONSTRUCTION#"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "ConstructionType",
-                            Value = "PANEL,TUHLA,EPK"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "SkippingTitleWords",
-                            Value = "офис,ателие,таван,фабрика,завод,магазин,фитнес,заведение,самостоятелна,сграда,многостаен,мезонет,търговски,комплекс,къща,склад"
+                            Value = "https://www.imot.bg/obiavi/prodazhbi/grad-#CITY#/#CURRENTNEIGHBOURHOOD#"
                         });
                 });
 
