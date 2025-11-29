@@ -27,13 +27,7 @@ namespace HomeService.Services.ImotBg
                 {
                     await _imotBgScraping.StartScraping(db);
 
-                    var apartmnets = db.ImotBgApartments.AsNoTracking().ToList();
-
-                    //double averagePrice = apartmnets.Average(x => (double)x.Price);
-                    //double averagePricePerSquare = apartmnets.Average(x => (double)x.PricePerSqMetre);
-
-                    //Console.WriteLine(Math.Round(averagePrice,2));
-                    //Console.WriteLine(Math.Round(averagePricePerSquare, 2));
+                    await _imotBgValidation.ValidateData(db);
                 }
             }
             catch (Exception ex)

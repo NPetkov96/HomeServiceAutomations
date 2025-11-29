@@ -33,12 +33,13 @@ namespace Operations.ImotBg
                     string imotBgHTML = null;
                     try
                     {
+
                         var bytes = await client.GetByteArrayAsync(url);
                         imotBgHTML = Encoding.GetEncoding("windows-1251").GetString(bytes);
                     }
                     catch (Exception ex)
                     {
-                        WriteLog.Log(ex.Message, ex.StackTrace!);
+                        WriteLog.Log($"{ex.Message}, {ex.StackTrace!} - - - - {url}");
                         continue;
                     }
 
@@ -50,6 +51,7 @@ namespace Operations.ImotBg
                     {
                         foreach (var apartmentItem in allApartmentsForCurrentPage)
                         {
+                            var ap = new ImotBgApartment();
                             try
                             {
                                 var titleAnchor = apartmentItem.SelectSingleNode(".//div[contains(@class,'zaglavie')]//a[contains(@class,'title')]");
@@ -69,23 +71,26 @@ namespace Operations.ImotBg
                                 var parsedPrice = double.Parse(m.Groups[1].Value.Replace(" ", ""));
 
                                 var existingApartment = await db.ImotBgApartments.FirstOrDefaultAsync(x => x.ApartmentId == apartmentItem.Id);
+
                                 if (existingApartment != null)
                                 {
+                                    if (existingApartment.Price != parsedPrice)
+                                        existingApartment.OldPrice = existingApartment.Price;
+
                                     existingApartment.Price = parsedPrice;
-                                    existingApartment.IsNew = false;
+                                    existingApartment.UpdatedDate = DateTime.Now;
                                     await db.SaveChangesAsync();
                                     continue;
                                 }
 
-                                var ap = new ImotBgApartment();
                                 ap.ApartmentId = apartmentItem.Id;
                                 ap.Neighbour = SetNeighbiurhood(neighbourhood[i]);
                                 ap.City = SetCity(city);
                                 ap.IsActive = true;
-                                ap.IsNew = true;
                                 ap.Price = parsedPrice;
                                 ap.Construction = SetConstructionType(constructionType[c]);
                                 ap.Title = shortTitle;
+                                ap.Date = DateTime.Now;
 
                                 string href = titleAnchor?.GetAttributeValue("href", "")?.Trim()!;
                                 ap.URl = href.Replace("//", "");
@@ -107,7 +112,9 @@ namespace Operations.ImotBg
                             }
                             catch (Exception ex)
                             {
-                                WriteLog.Log(ex.Message, ex.StackTrace!);
+                                ap.Error = $"{ex.Message} \n {ex.StackTrace}";
+                                WriteLog.Log(ex.Message, ex.StackTrace!, ex.InnerException!.ToString());
+                                await db.SaveChangesAsync();
                             }
                         }
 
@@ -124,8 +131,9 @@ namespace Operations.ImotBg
                     }
                 }
             }
-        }
 
+            WriteLog.Log("Successfully updated ImotBg Scraping!");
+        }
         private string SetCity(string currentCity)
         {
             string City = null;
@@ -170,7 +178,7 @@ namespace Operations.ImotBg
                 case "drujba-1": neighbiurhood = "Дружба 1"; break;
                 case "drujba-2": neighbiurhood = "Дружба 2"; break;
                 case "darvenitsa": neighbiurhood = "Дървеница"; break;
-                case "eksperimentalен": neighbiurhood = "Експериментален"; break;
+                case "eksperimentalen": neighbiurhood = "Експериментален"; break;
                 case "zapaden-park": neighbiurhood = "Западен парк"; break;
                 case "zaharna-fabrika": neighbiurhood = "Захарна фабрика"; break;
                 case "zona-b-18": neighbiurhood = "Зона Б-18"; break;

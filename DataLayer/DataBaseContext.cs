@@ -111,7 +111,7 @@ namespace DataLayer
             );
 
             modelBuilder.Entity<ImotBgSettings>().HasData(
-               new ImotBgSettings { Id = 1, Name = "SerachNeighbour", Value = "mladost-1,mladost-1a,mladost-2,mladost-3,mladost-4,malinova-dolina,musagenitsa,darvenitsa,eksperimentalен" },
+               new ImotBgSettings { Id = 1, Name = "SerachNeighbour", Value = "mladost-1,mladost-1a,mladost-2,mladost-3,mladost-4,malinova-dolina,musagenitsa,darvenitsa,eksperimentalen" },
                new ImotBgSettings { Id = 2, Name = "SerachCity", Value = "sofiya" },
                new ImotBgSettings { Id = 3, Name = "BaseURL", Value = "https://www.imot.bg/obiavi/prodazhbi/grad-#CITY#/#CURRENTNEIGHBOURHOOD#/#CONSTRUCTION#" },
                new ImotBgSettings { Id = 4, Name = "ConstructionType", Value = "PANEL,TUHLA,EPK" },

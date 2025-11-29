@@ -31,14 +31,18 @@ namespace Operations.ImotBg
                     if (!isAvailable)
                     {
                         ap.IsActive = false;
+                        ap.UpdatedDate = DateTime.Now;
                         await db.SaveChangesAsync();
                     }
                 }
                 catch (Exception ex)
                 {
+                    ap.Error = $"{ex.Message} \n {ex.StackTrace}";
                     WriteLog.Log(ex.Message, ex.StackTrace!);
                 }
             }
+
+            WriteLog.Log("Successfully updated ImotBg Validation!");
         }
     }
 }
