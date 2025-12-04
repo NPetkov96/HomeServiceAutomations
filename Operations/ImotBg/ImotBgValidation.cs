@@ -11,9 +11,10 @@ namespace Operations.ImotBg
         public async Task ValidateData(DataBaseContext db)
         {
             var client = new HttpClient();
-            var apartments = await db.ImotBgApartments.ToListAsync();
+            var apartments = await db.ImotBgApartments
+                .Where(ap => ap.IsActive == true)
+                .ToListAsync();
 
-            var counter = 1;
             foreach (var ap in apartments)
             {
                 var fullUrl = $"https://{ap.URl}";
@@ -38,7 +39,8 @@ namespace Operations.ImotBg
                 catch (Exception ex)
                 {
                     ap.Error = $"{ex.Message} \n {ex.StackTrace}";
-                    WriteLog.Log(ex.Message, ex.StackTrace!);
+
+                    WriteLog.Log($"{ex.Message}, {ex.StackTrace!} {fullUrl}");
                 }
             }
 
