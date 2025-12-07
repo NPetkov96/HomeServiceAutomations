@@ -26,6 +26,7 @@ namespace DataLayer
         public DbSet<MedSestriCatheter> MedSestriCatheters { get; set; }
         public DbSet<ImotBgApartment> ImotBgApartments { get; set; }
         public DbSet<ImotBgSettings> ImotBgSettings { get; set; }
+        public DbSet<ImotBgStatistic> ImotBgStatistics { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
