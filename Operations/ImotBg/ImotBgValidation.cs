@@ -39,8 +39,9 @@ namespace Operations.ImotBg
                 catch (Exception ex)
                 {
                     ap.Error = $"{ex.Message} \n {ex.StackTrace}";
-
-                    WriteLog.Log($"{ex.Message}, {ex.StackTrace!} {fullUrl}");
+                    ap.IsActive = false;
+                    ap.UpdatedDate = DateTime.Now;
+                    //WriteLog.Log($"{ex.Message}, {ex.StackTrace!} {fullUrl}");
                 }
             }
 
