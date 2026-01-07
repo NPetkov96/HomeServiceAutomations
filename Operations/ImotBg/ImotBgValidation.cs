@@ -41,6 +41,7 @@ namespace Operations.ImotBg
                     ap.Error = $"{ex.Message} \n {ex.StackTrace}";
                     ap.IsActive = false;
                     ap.UpdatedDate = DateTime.Now;
+                    await db.SaveChangesAsync();
                     //WriteLog.Log($"{ex.Message}, {ex.StackTrace!} {fullUrl}");
                 }
             }
