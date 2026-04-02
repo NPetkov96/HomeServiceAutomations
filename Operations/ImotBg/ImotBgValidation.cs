@@ -35,14 +35,24 @@ namespace Operations.ImotBg
                         ap.UpdatedDate = DateTime.Now;
                         await db.SaveChangesAsync();
                     }
+
+                    ap.UpdatedDate = DateTime.Now;
+                    await db.SaveChangesAsync();
+                    Console.WriteLine($"{ap.Id} - {fullUrl}");
                 }
                 catch (Exception ex)
                 {
+                    if (ex.Message == "Response status code does not indicate success: 404 (Not Found).")
+                    {
+                        ap.IsActive = false;
+                    }
+
                     ap.Error = $"{ex.Message} \n {ex.StackTrace}";
-                    ap.IsActive = false;
                     ap.UpdatedDate = DateTime.Now;
                     await db.SaveChangesAsync();
-                    //WriteLog.Log($"{ex.Message}, {ex.StackTrace!} {fullUrl}");
+
+                    //WriteLog.Log($"{ap.Id} {ex.Message}, {ex.StackTrace!} {fullUrl}");
+                    Console.WriteLine($"{ap.Id} - {ex.Message}, {ex.StackTrace!} {fullUrl}");
                 }
             }
 
