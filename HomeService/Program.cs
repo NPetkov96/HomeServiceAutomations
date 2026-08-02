@@ -6,7 +6,6 @@ using Operations.Catheters;
 using Operations.ImotBg;
 using Operations.Ngrok;
 using Operations.NgrokAndAPI;
-using Operations.UpdateKPIResults;
 using System.Reflection;
 
 namespace HomeService
@@ -27,15 +26,6 @@ namespace HomeService
                 IHostBuilder hostBuilder = null;
                 hostBuilder = Host.CreateDefaultBuilder(args).ConfigureServices((hostContext, services) =>
                 {
-                    //Campaigns
-                    services.AddScoped<Operations.NoniCampaignsAttachemnts.CampaignsOperations>();
-                    services.AddScoped<Operations.NoniCampaignsAttachemnts.Emails>();
-                    services.AddScoped<Operations.NoniCampaignsAttachemnts.CreateCampaign>();
-                    services.AddScoped<Operations.NoniCampaignsAttachemnts.ExtractPropertiesByEmail>();
-
-                    //KPI
-                    services.AddScoped<UpdateKPI>();
-
                     //Blood tests
                     services.AddScoped<UpdateBloodTestsOperation>();
 
@@ -46,10 +36,12 @@ namespace HomeService
 
                     //Catheters
                     services.AddScoped<SendCatheterNotificationOperation>();
+                    services.AddScoped<ExpiredCathetersOperation>();
 
                     //ImotBg
                     services.AddScoped<ImotBgScraping>();
                     services.AddScoped<ImotBgValidation>();
+                    services.AddScoped<DailyImotBgOperation>();
 
                     var hostedService = typeof(ScheduledTask);
                     var assembly = Assembly.GetExecutingAssembly();

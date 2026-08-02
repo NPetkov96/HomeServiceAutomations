@@ -1,0 +1,38 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: ${HOME_SERVICE_CONNECTION_STRING}
+    ports:
+      - "8080:8080"
+
+  blood-tests-job:
+    profiles: ["jobs"]
+    build:
+      context: .
+      dockerfile: Dockerfile.jobs
+    environment:
+      ConnectionStrings__DefaultConnection: ${HOME_SERVICE_CONNECTION_STRING}
+    command: ["blood-tests"]
+
+  expired-catheters-job:
+    profiles: ["jobs"]
+    build:
+      context: .
+      dockerfile: Dockerfile.jobs
+    environment:
+      ConnectionStrings__DefaultConnection: ${HOME_SERVICE_CONNECTION_STRING}
+      Firebase__ServiceAccountJson: ${FIREBASE_SERVICE_ACCOUNT_JSON}
+    command: ["expired-catheters"]
+
+  imot-bg-job:
+    profiles: ["jobs"]
+    build:
+      context: .
+      dockerfile: Dockerfile.jobs
+    environment:
+      ConnectionStrings__DefaultConnection: ${HOME_SERVICE_CONNECTION_STRING}
+    command: ["imot-bg"]

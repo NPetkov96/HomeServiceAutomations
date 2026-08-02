@@ -7,16 +7,35 @@ namespace Extensions
     {
         public static void Log(params string[] messages)
         {
-            using (var db = new DataBaseContext())
-            {
-                var logPath = Path.Combine(db.Settings.FirstOrDefault(s => s.Name == "LogsPath")!.Value!, $"{DateTime.Now.ToString("yyyy-MM-dd")}-Logs.txt");
-                var sb = new StringBuilder();
+            var text = string.Join(Environment.NewLine, messages);
+            Console.WriteLine("[{0:u}] {1}", DateTime.UtcNow, text);
 
-                foreach (var m in messages)
+            try
+            {
+                var logsDirectory = Environment.GetEnvironmentVariable("HOME_SERVICE_LOGS_PATH");
+                var isContainer = string.Equals(
+                    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"),
+                    "true",
+                    StringComparison.OrdinalIgnoreCase);
+
+                if (string.IsNullOrWhiteSpace(logsDirectory) && !isContainer)
                 {
-                    sb.AppendLine(m);
+                    using var db = new DataBaseContext();
+                    logsDirectory = db.Settings.FirstOrDefault(s => s.Name == "LogsPath")?.Value;
                 }
-                File.AppendAllText(logPath, $"[{DateTime.Now}] Note: {sb}");
+
+                if (string.IsNullOrWhiteSpace(logsDirectory))
+                {
+                    return;
+                }
+
+                Directory.CreateDirectory(logsDirectory);
+                var logPath = Path.Combine(logsDirectory, $"{DateTime.Now:yyyy-MM-dd}-Logs.txt");
+                File.AppendAllText(logPath, $"[{DateTime.Now:u}] {text}{Environment.NewLine}");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("Failed to write file log: {0}", ex.Message);
             }
         }
     }
