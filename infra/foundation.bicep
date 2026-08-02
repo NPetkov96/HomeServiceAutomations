@@ -36,6 +36,9 @@ resource workspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
       name: 'PerGB2018'
     }
     retentionInDays: 30
+    workspaceCapping: {
+      dailyQuotaGb: json('0.023')
+    }
     features: {
       enableLogAccessUsingOnlyResourcePermissions: true
     }

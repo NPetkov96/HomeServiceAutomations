@@ -24,6 +24,16 @@ a 256-bit key once in the ignored `work/secrets/home-api-key.txt` file and store
 the same value as an Azure Container App secret. Local hosting does not require
 the header.
 
+## Cost guard
+
+Run `Configure-Cost-Guard.ps1` to configure a EUR 15 monthly subscription
+budget. This intentionally leaves exchange-rate and delayed-reporting headroom
+below the requested USD 20 ceiling. Notifications fire at 50%, 75%, 90% and
+100%, with a forecasted alert at 75%. The script also caps Log Analytics
+ingestion at the minimum supported 0.023 GB/day. Azure budgets notify but do
+not stop resources; Azure does not support a custom hard spending limit for
+pay-as-you-go accounts.
+
 ## Initial deployment
 
 1. Sign in and select the intended subscription:
