@@ -3,18 +3,21 @@ name: Deploy Azure Container Apps
 on:
   push:
     branches:
-      - Azure-Migration
+      - master
   workflow_dispatch:
 
 permissions:
   contents: read
   id-token: write
+  packages: write
 
 env:
   RESOURCE_GROUP: rg-homeservice-prod
   API_APP_NAME: home-api
   BLOOD_TESTS_JOB_NAME: home-blood-tests-daily
   IMOT_BG_JOB_NAME: home-imot-bg-daily
+  GHCR_REGISTRY: ghcr.io
+  GHCR_NAMESPACE: npetkov96
 
 jobs:
   build-test-deploy:
@@ -45,11 +48,11 @@ jobs:
       - name: Build and push images
         shell: bash
         run: |
-          az acr login --name "${{ vars.AZURE_ACR_NAME }}"
-          docker build --file Dockerfile.api --tag "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-api:${GITHUB_SHA}" .
-          docker push "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-api:${GITHUB_SHA}"
-          docker build --file Dockerfile.jobs --tag "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-jobs:${GITHUB_SHA}" .
-          docker push "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-jobs:${GITHUB_SHA}"
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login "$GHCR_REGISTRY" -u "${{ github.actor }}" --password-stdin
+          docker build --file Dockerfile.api --tag "$GHCR_REGISTRY/$GHCR_NAMESPACE/home-api:${GITHUB_SHA}" .
+          docker push "$GHCR_REGISTRY/$GHCR_NAMESPACE/home-api:${GITHUB_SHA}"
+          docker build --file Dockerfile.jobs --tag "$GHCR_REGISTRY/$GHCR_NAMESPACE/home-jobs:${GITHUB_SHA}" .
+          docker push "$GHCR_REGISTRY/$GHCR_NAMESPACE/home-jobs:${GITHUB_SHA}"
 
       - name: Deploy API revision
         shell: bash
@@ -57,7 +60,7 @@ jobs:
           az containerapp update \
             --resource-group "$RESOURCE_GROUP" \
             --name "$API_APP_NAME" \
-            --image "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-api:${GITHUB_SHA}"
+            --image "$GHCR_REGISTRY/$GHCR_NAMESPACE/home-api:${GITHUB_SHA}"
 
       - name: Deploy daily jobs image
         shell: bash
@@ -66,5 +69,5 @@ jobs:
             az containerapp job update \
               --resource-group "$RESOURCE_GROUP" \
               --name "$job" \
-              --image "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-jobs:${GITHUB_SHA}"
+              --image "$GHCR_REGISTRY/$GHCR_NAMESPACE/home-jobs:${GITHUB_SHA}"
           done
