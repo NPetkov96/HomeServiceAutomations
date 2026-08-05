@@ -1,0 +1,70 @@
+name: Deploy Azure Container Apps
+
+on:
+  push:
+    branches:
+      - Azure-Migration
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  RESOURCE_GROUP: rg-homeservice-prod
+  API_APP_NAME: home-api
+  BLOOD_TESTS_JOB_NAME: home-blood-tests-daily
+  IMOT_BG_JOB_NAME: home-imot-bg-daily
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Build solution
+        run: dotnet build HomeService.sln --configuration Release
+
+      - name: Azure login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install Container Apps extension
+        run: az extension add --name containerapp --upgrade --only-show-errors
+
+      - name: Build and push images
+        shell: bash
+        run: |
+          az acr login --name "${{ vars.AZURE_ACR_NAME }}"
+          docker build --file Dockerfile.api --tag "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-api:${GITHUB_SHA}" .
+          docker push "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-api:${GITHUB_SHA}"
+          docker build --file Dockerfile.jobs --tag "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-jobs:${GITHUB_SHA}" .
+          docker push "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-jobs:${GITHUB_SHA}"
+
+      - name: Deploy API revision
+        shell: bash
+        run: |
+          az containerapp update \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$API_APP_NAME" \
+            --image "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-api:${GITHUB_SHA}"
+
+      - name: Deploy daily jobs image
+        shell: bash
+        run: |
+          for job in "$BLOOD_TESTS_JOB_NAME" "$IMOT_BG_JOB_NAME"; do
+            az containerapp job update \
+              --resource-group "$RESOURCE_GROUP" \
+              --name "$job" \
+              --image "${{ vars.AZURE_ACR_LOGIN_SERVER }}/home-jobs:${GITHUB_SHA}"
+          done

@@ -1,5 +1,4 @@
 ﻿using Operations.BloodTetsUpdate;
-using Operations.UpdateKPIResults;
 using static HomeService.Program;
 
 namespace HomeService.Services.MedSestri

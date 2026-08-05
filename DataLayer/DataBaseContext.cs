@@ -8,9 +8,30 @@ namespace DataLayer
 {
     public class DataBaseContext : DbContext
     {
+        public DataBaseContext()
+        {
+        }
+
+        public DataBaseContext(DbContextOptions<DataBaseContext> options)
+            : base(options)
+        {
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=PETKOV;Database=MyDbContext;Trusted_Connection=True;TrustServerCertificate=True");
+            if (optionsBuilder.IsConfigured)
+            {
+                return;
+            }
+
+            var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                connectionString = "Server=PETKOV;Database=MyDbContext;Trusted_Connection=True;TrustServerCertificate=True";
+            }
+
+            optionsBuilder.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
         }
 
         public DbSet<Settings> Settings { get; set; }

@@ -8,37 +8,19 @@ namespace HomeService.Services.MedSestri
     public class ExpiredCathetersService : ScheduledTask
     {
 
-        private readonly SendCatheterNotificationOperation _sendCatheterNotificationOperation;
+        private readonly ExpiredCathetersOperation _operation;
 
-        public ExpiredCathetersService(SendCatheterNotificationOperation sendCatheterNotificationOperation) : base(Configuration.Appsettings.GetSection("ExpiredCathetersService").GetValue<string>("CronPattern"),
+        public ExpiredCathetersService(ExpiredCathetersOperation operation) : base(Configuration.Appsettings.GetSection("ExpiredCathetersService").GetValue<string>("CronPattern"),
                   Configuration.Appsettings.GetSection("ExpiredCathetersService").GetValue<bool>("ServiceActive"))
         {
-            _sendCatheterNotificationOperation = sendCatheterNotificationOperation;
+            _operation = operation;
         }
 
         protected async override Task ExecuteTask()
         {
             try
             {
-                var mounthAgo = DateTime.Now.AddMonths(-1);
-
-                using (var db = new DataBaseContext())
-                {
-                    var expiredCatheters = db.MedSestriCatheters
-                        .Where(c => c.Date <= mounthAgo && c.IsChecked == false)
-                        .ToList();
-
-                    if (expiredCatheters.Any())
-                    {
-                        foreach (var catheter in expiredCatheters)
-                        {
-                            catheter.IsOverdue = true;
-                            db.SaveChanges();
-
-                            await _sendCatheterNotificationOperation.Send(catheter);
-                        }
-                    }
-                }
+                await _operation.Run();
             }
             catch (Exception ex)
             {

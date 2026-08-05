@@ -37,11 +37,24 @@ namespace Operations.Notifications
         {
             using (var db = new DataBaseContext())
             {
-                var jsonPath = db.Settings.FirstOrDefault(s => s.Name == "NotificationJSONFilePath")?.Value;
-
+                var serviceAccountJson = Environment.GetEnvironmentVariable("Firebase__ServiceAccountJson");
                 GoogleCredential credential;
-                using (var stream = new FileStream(jsonPath, FileMode.Open, FileAccess.Read))
+
+                if (!string.IsNullOrWhiteSpace(serviceAccountJson))
                 {
+                    credential = GoogleCredential
+                        .FromJson(serviceAccountJson)
+                        .CreateScoped("https://www.googleapis.com/auth/firebase.messaging");
+                }
+                else
+                {
+                    var jsonPath = db.Settings.FirstOrDefault(s => s.Name == "NotificationJSONFilePath")?.Value;
+                    if (string.IsNullOrWhiteSpace(jsonPath))
+                    {
+                        throw new InvalidOperationException("Firebase credentials are not configured.");
+                    }
+
+                    using var stream = new FileStream(jsonPath, FileMode.Open, FileAccess.Read);
                     credential = GoogleCredential
                         .FromStream(stream)
                         .CreateScoped("https://www.googleapis.com/auth/firebase.messaging");

@@ -25,7 +25,7 @@ namespace Operations.Catheters
                 }
             };
 
-            SendNotification.Send(notificatioBody).Wait();
+            await SendNotification.Send(notificatioBody);
         }
 
     }

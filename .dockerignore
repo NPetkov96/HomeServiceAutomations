@@ -1,0 +1,15 @@
+**/.git
+**/.github
+**/.vs
+.git
+.github
+.vs
+**/bin
+**/obj
+**/token.json
+**/*.user
+**/*.suo
+**/*.bacpac
+infra
+work
+outputs
