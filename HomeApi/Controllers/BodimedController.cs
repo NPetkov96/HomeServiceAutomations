@@ -55,6 +55,162 @@ namespace HomeApi.Controllers
             return patientsDto;
         }
 
+        [HttpGet("statistics")]
+        public async Task<ActionResult<MedSestriStatisticsDTO>> GetStatisticsAsync(
+            CancellationToken cancellationToken)
+        {
+            var activeDays = await _context.MedSestriPatients
+                .AsNoTracking()
+                .GroupBy(patient => patient.Date.Date)
+                .Select(group => new
+                {
+                    Date = group.Key,
+                    RecordCount = group.Count()
+                })
+                .OrderBy(day => day.Date)
+                .ToListAsync(cancellationToken);
+
+            if (activeDays.Count == 0)
+                return Ok(new MedSestriStatisticsDTO());
+
+            var today = GetSofiaToday();
+            var firstDate = activeDays[0].Date.Date;
+            var lastDate = activeDays[^1].Date.Date;
+            var recordsByDate = activeDays.ToDictionary(day => day.Date.Date, day => day.RecordCount);
+            var dailySeries = BuildDailySeries(firstDate, today, recordsByDate);
+
+            var result = new MedSestriStatisticsDTO
+            {
+                FirstDate = firstDate,
+                LastDate = lastDate,
+                TotalDays = Math.Max(0, (today - firstDate).Days + 1),
+                ActiveDays = activeDays.Count,
+                AveragePerActiveDay = Math.Round(
+                    activeDays.Sum(day => day.RecordCount) / (decimal)activeDays.Count,
+                    2),
+                MaximumPerDay = activeDays.Max(day => day.RecordCount),
+                Last7Days = BuildPeriodStatistics(recordsByDate, lastDate, 7),
+                Last30Days = BuildPeriodStatistics(recordsByDate, lastDate, 30),
+                Daily = dailySeries,
+                Monthly = activeDays
+                    .GroupBy(day => new { day.Date.Year, day.Date.Month })
+                    .OrderBy(group => group.Key.Year)
+                    .ThenBy(group => group.Key.Month)
+                    .Select(group => new MedSestriMonthlyStatisticsDTO
+                    {
+                        Month = new DateTime(group.Key.Year, group.Key.Month, 1),
+                        RecordCount = group.Sum(day => day.RecordCount),
+                        ActiveDays = group.Count(),
+                        AveragePerActiveDay = Math.Round(group.Average(day => (decimal)day.RecordCount), 2),
+                        MaximumPerDay = group.Max(day => day.RecordCount)
+                    })
+                    .ToList(),
+                ByWeekday = activeDays
+                    .GroupBy(day => GetMondayBasedDayNumber(day.Date.DayOfWeek))
+                    .OrderBy(group => group.Key)
+                    .Select(group => new MedSestriWeekdayStatisticsDTO
+                    {
+                        DayNumber = group.Key,
+                        DayName = GetBulgarianDayName(group.Key),
+                        RecordCount = group.Sum(day => day.RecordCount)
+                    })
+                    .ToList()
+            };
+
+            return Ok(result);
+        }
+
+        private static List<MedSestriDailyStatisticsDTO> BuildDailySeries(
+            DateTime firstDate,
+            DateTime today,
+            IReadOnlyDictionary<DateTime, int> recordsByDate)
+        {
+            var result = new List<MedSestriDailyStatisticsDTO>();
+            var rollingWindow = new Queue<int>();
+            var rollingSum = 0;
+
+            for (var date = firstDate; date <= today; date = date.AddDays(1))
+            {
+                var recordCount = recordsByDate.GetValueOrDefault(date);
+                rollingWindow.Enqueue(recordCount);
+                rollingSum += recordCount;
+
+                if (rollingWindow.Count > 7)
+                    rollingSum -= rollingWindow.Dequeue();
+
+                result.Add(new MedSestriDailyStatisticsDTO
+                {
+                    Date = date,
+                    RecordCount = recordCount,
+                    SevenDayAverage = Math.Round(rollingSum / (decimal)rollingWindow.Count, 2)
+                });
+            }
+
+            return result;
+        }
+
+        private static MedSestriPeriodStatisticsDTO BuildPeriodStatistics(
+            IReadOnlyDictionary<DateTime, int> recordsByDate,
+            DateTime lastDate,
+            int numberOfDays)
+        {
+            var currentStartExclusive = lastDate.AddDays(-numberOfDays);
+            var previousStartExclusive = lastDate.AddDays(-(numberOfDays * 2));
+            var previousEndInclusive = currentStartExclusive;
+
+            var currentCount = recordsByDate
+                .Where(day => day.Key > currentStartExclusive && day.Key <= lastDate)
+                .Sum(day => day.Value);
+
+            var previousCount = recordsByDate
+                .Where(day => day.Key > previousStartExclusive && day.Key <= previousEndInclusive)
+                .Sum(day => day.Value);
+
+            return new MedSestriPeriodStatisticsDTO
+            {
+                RecordCount = currentCount,
+                PreviousRecordCount = previousCount,
+                ChangePercent = previousCount == 0
+                    ? null
+                    : Math.Round((currentCount - previousCount) * 100m / previousCount, 1)
+            };
+        }
+
+        private static DateTime GetSofiaToday()
+        {
+            foreach (var timeZoneId in new[] { "Europe/Sofia", "FLE Standard Time" })
+            {
+                try
+                {
+                    var sofiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+                    return TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, sofiaTimeZone).Date;
+                }
+                catch (TimeZoneNotFoundException)
+                {
+                }
+                catch (InvalidTimeZoneException)
+                {
+                }
+            }
+
+            return DateTime.UtcNow.Date;
+        }
+
+        private static int GetMondayBasedDayNumber(DayOfWeek dayOfWeek) =>
+            ((int)dayOfWeek + 6) % 7 + 1;
+
+        private static string GetBulgarianDayName(int dayNumber) => dayNumber switch
+        {
+            1 => "Понеделник",
+            2 => "Вторник",
+            3 => "Сряда",
+            4 => "Четвъртък",
+            5 => "Петък",
+            6 => "Събота",
+            7 => "Неделя",
+            _ => string.Empty
+        };
+
         [HttpPost("createPatient")] // CREATING NEW PATIENT
         public async Task CreatePatient([FromBody] MedSestriPatient model)
         {
