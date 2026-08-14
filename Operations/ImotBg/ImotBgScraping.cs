@@ -10,9 +10,11 @@ namespace Operations.ImotBg
 {
     public class ImotBgScraping
     {
+        private static readonly HttpClient client = new HttpClient();
+        private static readonly TimeSpan RequestDelay = TimeSpan.FromMilliseconds(300);
+
         public async Task StartScraping(DataBaseContext db)
         {
-            var client = new HttpClient();
             var settings = db.ImotBgSettings.ToDictionary(x => x.Name, x => x.Value);
 
             var city = settings["SerachCity"];
@@ -41,6 +43,10 @@ namespace Operations.ImotBg
                     {
                         WriteLog.Log($"{ex.Message}, {ex.StackTrace!} - - - - {url}");
                         continue;
+                    }
+                    finally
+                    {
+                        await Task.Delay(RequestDelay);
                     }
 
                     var doc = new HtmlDocument();
@@ -79,6 +85,13 @@ namespace Operations.ImotBg
 
                                     existingApartment.Price = parsedPrice;
                                     existingApartment.UpdatedDate = DateTime.Now;
+                                    existingApartment.IsActive = true;
+
+                                    if (existingApartment.SquareMetres > 0)
+                                    {
+                                        existingApartment.PricePerSqMetre = Math.Round(parsedPrice / existingApartment.SquareMetres, 2);
+                                    }
+
                                     await db.SaveChangesAsync();
                                     continue;
                                 }
@@ -101,8 +114,10 @@ namespace Operations.ImotBg
                                 var mArea = Regex.Match(info.InnerText, @"(\d+)\s*кв\.м");
                                 if (mArea.Success) ap.SquareMetres = double.Parse(mArea.Groups[1].Value);
 
-                                double pricePerSquareMetres = Math.Round((double)ap.Price / ap.SquareMetres, 2);
-                                ap.PricePerSqMetre = pricePerSquareMetres;
+                                if (ap.SquareMetres > 0 && ap.Price.HasValue)
+                                {
+                                    ap.PricePerSqMetre = Math.Round(ap.Price.Value / ap.SquareMetres, 2);
+                                }
 
                                 var mFloor = Regex.Match(info.InnerText, @"(\d+)-\w*\sет");
                                 if (mFloor.Success) ap.Floor = int.Parse(mFloor.Groups[1].Value);
@@ -113,8 +128,7 @@ namespace Operations.ImotBg
                             catch (Exception ex)
                             {
                                 ap.Error = $"{ex.Message} \n {ex.StackTrace}";
-                                WriteLog.Log(ex.Message, ex.StackTrace!, ex.InnerException!.ToString());
-                                await db.SaveChangesAsync();
+                                WriteLog.Log(ex.Message, ex.StackTrace ?? string.Empty, ex.InnerException?.ToString() ?? string.Empty);
                             }
                         }
 
@@ -123,6 +137,7 @@ namespace Operations.ImotBg
                             break;
 
                         string nextUrl = nextPageNode.GetAttributeValue("href", null);
+                        await Task.Delay(RequestDelay);
                         var bytesNextPage = await client.GetByteArrayAsync(nextUrl);
                         var imotBgHTMLNextPage = Encoding.GetEncoding("windows-1251").GetString(bytesNextPage);
                         doc.LoadHtml(imotBgHTMLNextPage);

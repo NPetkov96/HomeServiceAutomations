@@ -2,15 +2,18 @@
 using Extensions;
 using HtmlAgilityPack;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Text;
 
 namespace Operations.ImotBg
 {
     public class ImotBgValidation
     {
+        private static readonly HttpClient client = new HttpClient();
+        private static readonly TimeSpan RequestDelay = TimeSpan.FromMilliseconds(300);
+
         public async Task ValidateData(DataBaseContext db)
         {
-            var client = new HttpClient();
             var apartments = await db.ImotBgApartments
                 .Where(ap => ap.IsActive == true)
                 .ToListAsync();
@@ -32,27 +35,31 @@ namespace Operations.ImotBg
                     if (!isAvailable)
                     {
                         ap.IsActive = false;
-                        ap.UpdatedDate = DateTime.Now;
-                        await db.SaveChangesAsync();
                     }
 
                     ap.UpdatedDate = DateTime.Now;
                     await db.SaveChangesAsync();
-                    Console.WriteLine($"{ap.Id} - {fullUrl}");
                 }
-                catch (Exception ex)
+                catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
                 {
-                    if (ex.Message == "Response status code does not indicate success: 404 (Not Found).")
-                    {
-                        ap.IsActive = false;
-                    }
-
+                    ap.IsActive = false;
                     ap.Error = $"{ex.Message} \n {ex.StackTrace}";
                     ap.UpdatedDate = DateTime.Now;
                     await db.SaveChangesAsync();
 
-                    //WriteLog.Log($"{ap.Id} {ex.Message}, {ex.StackTrace!} {fullUrl}");
-                    Console.WriteLine($"{ap.Id} - {ex.Message}, {ex.StackTrace!} {fullUrl}");
+                    WriteLog.Log($"Apartment {ap.Id} returned 404, marked inactive.", fullUrl);
+                }
+                catch (Exception ex)
+                {
+                    ap.Error = $"{ex.Message} \n {ex.StackTrace}";
+                    ap.UpdatedDate = DateTime.Now;
+                    await db.SaveChangesAsync();
+
+                    WriteLog.Log($"Validation failed for apartment {ap.Id}.", ex.Message, ex.StackTrace ?? string.Empty, fullUrl);
+                }
+                finally
+                {
+                    await Task.Delay(RequestDelay);
                 }
             }
 

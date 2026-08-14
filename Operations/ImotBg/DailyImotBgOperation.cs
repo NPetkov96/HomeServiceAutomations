@@ -29,7 +29,10 @@ namespace Operations.ImotBg
                 return;
             }
 
-            var apartments = await db.ImotBgApartments.AsNoTracking().ToListAsync();
+            var apartments = await db.ImotBgApartments
+                .AsNoTracking()
+                .Where(x => x.IsActive)
+                .ToListAsync();
             if (apartments.Count == 0)
             {
                 WriteLog.Log("No ImotBg apartments were found for daily statistics.");

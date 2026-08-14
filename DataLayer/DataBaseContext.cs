@@ -140,6 +140,14 @@ namespace DataLayer
                new ImotBgSettings { Id = 5, Name = "SkippingTitleWords", Value = "офис,ателие,таван,фабрика,завод,магазин,фитнес,заведение,самостоятелна,сграда,многостаен,мезонет,търговски,комплекс,къща,склад" }
            );
 
+            modelBuilder.Entity<ImotBgApartment>()
+                .Property(x => x.ApartmentId)
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<ImotBgApartment>()
+                .HasIndex(x => x.ApartmentId)
+                .IsUnique();
+
             modelBuilder.Entity<MedSestriPatientBloodTest>()
         .HasKey(pt => new { pt.PatientId, pt.BloodTestId });
 
