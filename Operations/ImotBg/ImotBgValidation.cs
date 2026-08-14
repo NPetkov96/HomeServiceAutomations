@@ -24,17 +24,26 @@ namespace Operations.ImotBg
 
                 try
                 {
-                    var bytes = await client.GetByteArrayAsync(fullUrl);
+                    using var response = await client.GetAsync(fullUrl);
+                    response.EnsureSuccessStatusCode();
+
+                    var wasRedirected = response.RequestMessage?.RequestUri?.AbsoluteUri != fullUrl;
+
+                    var bytes = await response.Content.ReadAsByteArrayAsync();
                     var imotBgHTML = Encoding.GetEncoding("windows-1251").GetString(bytes);
 
                     var doc = new HtmlDocument();
                     doc.LoadHtml(imotBgHTML);
 
-                    var isAvailable = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'pageMessageAlert page980 MT20')]") == null;
+                    var hasUnavailableMessage = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'pageMessageAlert page980 MT20')]") != null;
 
-                    if (!isAvailable)
+                    if (wasRedirected || hasUnavailableMessage)
                     {
                         ap.IsActive = false;
+                    }
+                    else
+                    {
+                        ap.Error = null;
                     }
 
                     ap.UpdatedDate = DateTime.Now;
