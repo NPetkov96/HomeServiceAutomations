@@ -21,7 +21,9 @@ public class Program
         var mcpAuth = McpAuthOptions.FromConfiguration(
             builder.Configuration,
             requireHttps: builder.Environment.IsProduction());
-        var mcpResource = new Uri(mcpAuth.PublicBaseUri, "mcp");
+        var resourceMetadataUri = new Uri(
+            mcpAuth.PublicBaseUri,
+            ".well-known/oauth-protected-resource");
 
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
@@ -68,9 +70,10 @@ public class Program
             })
             .AddMcp(options =>
             {
+                options.ResourceMetadataUri = resourceMetadataUri;
                 options.ResourceMetadata = new()
                 {
-                    Resource = mcpResource.ToString(),
+                    Resource = mcpAuth.Audience,
                     AuthorizationServers =
                     {
                         mcpAuth.AuthorizationServer.ToString()

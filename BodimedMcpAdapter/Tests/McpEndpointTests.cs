@@ -31,7 +31,7 @@ public sealed class McpEndpointTests(McpAdapterFactory factory)
     }
 
     [Fact]
-    public async Task Mcp_RejectsAnUnauthenticatedRequestWithBearerChallenge()
+    public async Task McpEndpoint_RemainsAtMcpAndReturnsTheRootMetadataChallenge()
     {
         using var client = factory.CreateClient();
         using var request = new HttpRequestMessage(HttpMethod.Post, "/mcp")
@@ -47,22 +47,29 @@ public sealed class McpEndpointTests(McpAdapterFactory factory)
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         var challenge = Assert.Single(response.Headers.WwwAuthenticate);
         Assert.Equal("Bearer", challenge.Scheme);
-        Assert.Contains("resource_metadata=", challenge.Parameter);
-        Assert.Contains("https://localhost/", challenge.Parameter);
+        Assert.Equal(
+            "resource_metadata=\"https://localhost/.well-known/oauth-protected-resource\"",
+            challenge.Parameter);
     }
 
     [Fact]
-    public async Task ProtectedResourceMetadata_AdvertisesWriteScope()
+    public async Task ProtectedResourceMetadata_UsesTheExactAudienceWithoutMcpPath()
     {
         using var client = factory.CreateClient();
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            "/.well-known/oauth-protected-resource");
+        request.Headers.TryAddWithoutValidation("X-Forwarded-Proto", "https");
 
-        using var response = await client.GetAsync(
-            "/.well-known/oauth-protected-resource/mcp");
-        var content = await response.Content.ReadAsStringAsync();
+        using var response = await client.SendAsync(request);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("bodimed.write", content);
-        Assert.Contains("http://authorization.test", content);
+        var metadata = await response.Content.ReadFromJsonAsync<ProtectedResourceMetadata>();
+        Assert.NotNull(metadata);
+        Assert.Equal("http://audience.test", metadata.Resource);
+        Assert.DoesNotContain("/mcp", metadata.Resource, StringComparison.Ordinal);
+        Assert.Equal(["http://authorization.test/"], metadata.AuthorizationServers);
+        Assert.Equal(["bodimed.write"], metadata.ScopesSupported);
     }
 
     [Fact]
@@ -121,9 +128,9 @@ public sealed class McpAdapterFactory : WebApplicationFactory<Program>
             ["ASPNETCORE_ENVIRONMENT"] = "Development",
             ["BODIMED_API_KEY"] = "integration-test-key",
             ["MCP_AUTH_ISSUER"] = "http://issuer.test",
-            ["MCP_AUTH_AUDIENCE"] = "bodimed-mcp",
+            ["MCP_AUTH_AUDIENCE"] = "http://audience.test",
             ["MCP_AUTH_AUTHORIZATION_SERVER"] = "http://authorization.test",
-            ["MCP_AUTH_PUBLIC_BASE_URL"] = "http://localhost",
+            ["MCP_AUTH_PUBLIC_BASE_URL"] = "https://localhost",
             ["MCP_AUTH_REQUIRED_SCOPE"] = "bodimed.write"
         };
 
@@ -154,3 +161,11 @@ public sealed class McpAdapterFactory : WebApplicationFactory<Program>
         }
     }
 }
+
+public sealed record ProtectedResourceMetadata(
+    [property: System.Text.Json.Serialization.JsonPropertyName("resource")]
+    string Resource,
+    [property: System.Text.Json.Serialization.JsonPropertyName("authorization_servers")]
+    string[] AuthorizationServers,
+    [property: System.Text.Json.Serialization.JsonPropertyName("scopes_supported")]
+    string[] ScopesSupported);
