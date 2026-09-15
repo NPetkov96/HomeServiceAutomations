@@ -2,6 +2,7 @@ using BodimedMcpAdapter.Configuration;
 using BodimedMcpAdapter.Mcp;
 using BodimedMcpAdapter.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using ModelContextProtocol.AspNetCore;
 using ModelContextProtocol.AspNetCore.Authentication;
@@ -21,6 +22,13 @@ public class Program
             builder.Configuration,
             requireHttps: builder.Environment.IsProduction());
         var mcpResource = new Uri(mcpAuth.PublicBaseUri, "mcp");
+
+        builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
 
         builder.Logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
         builder.Logging.AddFilter("ModelContextProtocol", LogLevel.Warning);
@@ -90,6 +98,7 @@ public class Program
 
         var app = builder.Build();
 
+        app.UseForwardedHeaders();
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))

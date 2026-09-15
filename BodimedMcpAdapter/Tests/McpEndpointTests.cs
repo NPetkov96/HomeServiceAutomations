@@ -40,6 +40,7 @@ public sealed class McpEndpointTests(McpAdapterFactory factory)
         };
         request.Headers.Accept.ParseAdd("application/json");
         request.Headers.Accept.ParseAdd("text/event-stream");
+        request.Headers.TryAddWithoutValidation("X-Forwarded-Proto", "https");
 
         using var response = await client.SendAsync(request);
 
@@ -47,6 +48,7 @@ public sealed class McpEndpointTests(McpAdapterFactory factory)
         var challenge = Assert.Single(response.Headers.WwwAuthenticate);
         Assert.Equal("Bearer", challenge.Scheme);
         Assert.Contains("resource_metadata=", challenge.Parameter);
+        Assert.Contains("https://localhost/", challenge.Parameter);
     }
 
     [Fact]
