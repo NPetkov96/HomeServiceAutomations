@@ -1,0 +1,83 @@
+name: Deploy Bodimed MCP Adapter
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "BodimedMcpAdapter/**"
+      - ".github/workflows/bodimed-mcp-adapter.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
+env:
+  RESOURCE_GROUP: rg-homeservice-prod
+  MCP_APP_NAME: ${{ vars.BODIMED_MCP_CONTAINER_APP_NAME }}
+  GHCR_REGISTRY: ghcr.io
+  GHCR_NAMESPACE: npetkov96
+  IMAGE_NAME: bodimed-mcp-adapter
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Build adapter
+        run: >-
+          dotnet build
+          BodimedMcpAdapter/BodimedMcpAdapter.csproj
+          --configuration Release
+
+      - name: Test adapter
+        run: >-
+          dotnet test
+          BodimedMcpAdapter/Tests/BodimedMcpAdapter.Tests.csproj
+          --configuration Release
+
+      - name: Verify deployment target
+        shell: bash
+        run: |
+          if [[ -z "$MCP_APP_NAME" ]]; then
+            echo "Repository variable BODIMED_MCP_CONTAINER_APP_NAME is required."
+            exit 1
+          fi
+
+      - name: Azure login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install Container Apps extension
+        run: az extension add --name containerapp --upgrade --only-show-errors
+
+      - name: Build and push adapter image
+        shell: bash
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login "$GHCR_REGISTRY" -u "${{ github.actor }}" --password-stdin
+          docker build \
+            --file BodimedMcpAdapter/Dockerfile \
+            --tag "$GHCR_REGISTRY/$GHCR_NAMESPACE/$IMAGE_NAME:${GITHUB_SHA}" \
+            .
+          docker push "$GHCR_REGISTRY/$GHCR_NAMESPACE/$IMAGE_NAME:${GITHUB_SHA}"
+
+      - name: Deploy only the MCP Container App
+        shell: bash
+        run: |
+          az containerapp update \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$MCP_APP_NAME" \
+            --image "$GHCR_REGISTRY/$GHCR_NAMESPACE/$IMAGE_NAME:${GITHUB_SHA}"
