@@ -15,7 +15,7 @@ namespace Operations.Notifications
         {
             await CreateTokenAsync();
 
-            using (var db = new DataBaseContext())
+            using (var db = DataBaseContext.Create())
             using (var httpClient = new HttpClient())
             {
                 var token = db.Settings.FirstOrDefault(s => s.Name == "NotificationOAuth2Token")?.Value;
@@ -35,7 +35,7 @@ namespace Operations.Notifications
 
         private static async Task CreateTokenAsync()
         {
-            using (var db = new DataBaseContext())
+            using (var db = DataBaseContext.Create())
             {
                 var serviceAccountJson = Environment.GetEnvironmentVariable("Firebase__ServiceAccountJson");
                 GoogleCredential credential;

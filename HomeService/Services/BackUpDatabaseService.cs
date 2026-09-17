@@ -21,7 +21,7 @@ namespace HomeService.Services
         {
             try
             {
-                using (var db = new DataBaseContext())
+                using (var db = DataBaseContext.Create())
                 {
                     var connection = (SqlConnection)db.Database.GetDbConnection();
                     var databaseName = connection.Database;

@@ -1,6 +1,7 @@
 ﻿using DataLayer.Models;
 using DataLayer.Models.Common;
 using DataLayer.Models.ImotBg;
+using DataLayer.CompiledModels;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -8,13 +9,16 @@ namespace DataLayer
 {
     public class DataBaseContext : DbContext
     {
-        public DataBaseContext()
-        {
-        }
-
         public DataBaseContext(DbContextOptions<DataBaseContext> options)
             : base(options)
         {
+        }
+
+        public static DataBaseContext Create(string? connectionString = null)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<DataBaseContext>();
+            Configure(optionsBuilder, connectionString);
+            return new DataBaseContext(optionsBuilder.Options);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -24,14 +28,33 @@ namespace DataLayer
                 return;
             }
 
-            var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+            Configure(optionsBuilder);
+        }
 
+        public static void Configure(
+            DbContextOptionsBuilder optionsBuilder,
+            string? connectionString = null)
+        {
+            connectionString = ResolveConnectionString(connectionString);
+
+            optionsBuilder
+                .UseSqlServer(
+                    connectionString,
+                    sqlOptions => sqlOptions.EnableRetryOnFailure())
+                .UseModel(DataBaseContextModel.Instance);
+        }
+
+        public static string ResolveConnectionString(string? connectionString = null)
+        {
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                connectionString = "Server=PETKOV;Database=MyDbContext;Trusted_Connection=True;TrustServerCertificate=True";
+                connectionString = Environment.GetEnvironmentVariable(
+                    "ConnectionStrings__DefaultConnection");
             }
 
-            optionsBuilder.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
+            return string.IsNullOrWhiteSpace(connectionString)
+                ? "Server=PETKOV;Database=MyDbContext;Trusted_Connection=True;TrustServerCertificate=True"
+                : connectionString;
         }
 
         public DbSet<Settings> Settings { get; set; }

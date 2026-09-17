@@ -22,7 +22,7 @@ namespace Operations.BloodTetsUpdate
             List<string> urls = GetUrls();
             int scrapeErrors = 0;
 
-            using (var db = new DataBaseContext())
+            using (var db = DataBaseContext.Create())
             {
                 HtmlDocument doc = new HtmlDocument();
                 foreach (var node in urls)

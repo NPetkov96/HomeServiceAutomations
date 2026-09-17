@@ -1,6 +1,7 @@
 
 using DataLayer;
 using Extensions;
+using HomeApi.Services;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,7 +17,12 @@ namespace HomeApi
 
                 var builder = WebApplication.CreateBuilder(args);
 
-                builder.Services.AddDbContext<DataBaseContext>();
+                var connectionString = builder.Configuration.GetConnectionString(
+                    "DefaultConnection");
+                builder.Services.AddDbContextPool<DataBaseContext>(
+                    options => DataBaseContext.Configure(options, connectionString),
+                    poolSize: 32);
+                builder.Services.AddHostedService<DatabaseWarmupService>();
 
                 builder.Services.AddControllers()
                     .AddJsonOptions(options =>

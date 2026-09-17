@@ -51,7 +51,7 @@ namespace Operations.NgrokAndAPI
                 CreateNoWindow = true
             };
 
-            using (var db = new DataBaseContext())
+            using (var db = DataBaseContext.Create())
             using (var process = Process.Start(startInfo))
             {
                 string? output = process?.StandardOutput.ReadToEnd();

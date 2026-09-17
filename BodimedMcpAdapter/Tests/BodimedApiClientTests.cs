@@ -66,6 +66,48 @@ public sealed class BodimedApiClientTests
     }
 
     [Fact]
+    public async Task Timeout_ReportsUnknownOutcomeWithoutRetryingOrLoggingSensitiveData()
+    {
+        var logger = new CollectingLogger<BodimedApiClient>();
+        var handler = new TimeoutHandler();
+        var client = CreateClient(handler, logger, "secret-api-key-value");
+        var payload = SensitivePayload();
+
+        var exception = await Assert.ThrowsAsync<BodimedApiException>(() =>
+            client.CreatePatientAsync(payload));
+
+        Assert.Equal(1, handler.CallCount);
+        Assert.Null(exception.StatusCode);
+        Assert.Contains("outcome is unknown", exception.Message, StringComparison.OrdinalIgnoreCase);
+
+        var logs = string.Join(Environment.NewLine, logger.Messages);
+        Assert.Contains("outcome is unknown", logs, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(payload.FullName, logs);
+        Assert.DoesNotContain(payload.Egn, logs);
+        Assert.DoesNotContain(payload.PhoneNumber, logs);
+        Assert.DoesNotContain(payload.Note, logs);
+        Assert.DoesNotContain(payload.BloodTests[0].Name, logs);
+        Assert.DoesNotContain("secret-api-key-value", logs);
+    }
+
+    [Fact]
+    public async Task CallerCancellation_IsNotReportedAsApiTimeout()
+    {
+        var logger = new CollectingLogger<BodimedApiClient>();
+        var handler = new RecordingHandler(HttpStatusCode.OK);
+        var client = CreateClient(handler, logger);
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            client.CreatePatientAsync(ValidPayload(), cancellation.Token));
+
+        Assert.DoesNotContain(
+            logger.Messages,
+            message => message.Contains("outcome is unknown", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void MissingApiKeyEnvironmentVariable_IsRejected()
     {
         var configuration = new ConfigurationBuilder()
@@ -173,6 +215,19 @@ public sealed class BodimedApiClientTests
             {
                 Content = new StringContent(responseBody)
             };
+        }
+    }
+
+    private sealed class TimeoutHandler : HttpMessageHandler
+    {
+        public int CallCount { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            CallCount++;
+            throw new TaskCanceledException("Simulated HttpClient timeout.");
         }
     }
 

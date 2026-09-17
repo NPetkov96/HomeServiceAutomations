@@ -38,7 +38,7 @@ public class Program
         builder.Services.AddHttpClient<IBodimedApiClient, BodimedApiClient>(client =>
         {
             client.BaseAddress = bodimedApi.BaseUri;
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.Timeout = TimeSpan.FromSeconds(90);
         }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
         {
             AllowAutoRedirect = false

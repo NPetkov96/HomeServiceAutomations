@@ -220,11 +220,16 @@ namespace HomeApi.Controllers
                 .FirstOrDefaultAsync(p => p.Date >= oneHourAgo && (p.EGN == model.EGN || p.FullName == model.FullName));
 
             var newBloodTests = model.BloodTests
-                .Select(bt => bt.Name).ToList();
+                .Select(bt => bt.Name)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
 
-            var selectedBloodTests = await _context.MedSestriBloodTests
-                        .Where(bt => newBloodTests.Contains(bt.Name))
-                        .ToListAsync();
+            var selectedBloodTestIds = await _context.MedSestriBloodTests
+                .AsNoTracking()
+                .Where(bt => newBloodTests.Contains(bt.Name))
+                .Select(bt => bt.Id)
+                .ToListAsync();
 
             if (existingModel != null)
             {
@@ -238,17 +243,24 @@ namespace HomeApi.Controllers
                     .Where(x => x.PatientId == existingModel.Id)
                     .ToListAsync();
 
-                _context.MedSestriPatientsBloodTests.RemoveRange(existingRelations);
-                await _context.SaveChangesAsync();
+                var selectedBloodTestIdSet = selectedBloodTestIds.ToHashSet();
+                var existingBloodTestIdSet = existingRelations
+                    .Select(relation => relation.BloodTestId)
+                    .ToHashSet();
 
-                foreach (var test in selectedBloodTests)
-                {
-                    existingModel.PatientBloodTests.Add(new MedSestriPatientBloodTest
-                    {
-                        PatientId = existingModel.Id,
-                        BloodTestId = test.Id
-                    });
-                }
+                _context.MedSestriPatientsBloodTests.RemoveRange(
+                    existingRelations.Where(relation =>
+                        !selectedBloodTestIdSet.Contains(relation.BloodTestId)));
+                _context.MedSestriPatientsBloodTests.AddRange(
+                    selectedBloodTestIds
+                        .Where(bloodTestId =>
+                            !existingBloodTestIdSet.Contains(bloodTestId))
+                        .Select(bloodTestId =>
+                        new MedSestriPatientBloodTest
+                        {
+                            PatientId = existingModel.Id,
+                            BloodTestId = bloodTestId
+                        }));
                 WriteLog.Log($"Patient {model.FullName} updated with new blood tests.");
             }
             else
@@ -260,10 +272,10 @@ namespace HomeApi.Controllers
                     EGN = model.EGN,
                     Date = model.Date,
                     Note = model.Note,
-                    PatientBloodTests = selectedBloodTests
-                        .Select(bt => new MedSestriPatientBloodTest
+                    PatientBloodTests = selectedBloodTestIds
+                        .Select(bloodTestId => new MedSestriPatientBloodTest
                         {
-                            BloodTestId = bt.Id
+                            BloodTestId = bloodTestId
                         })
                         .ToList()
                 };

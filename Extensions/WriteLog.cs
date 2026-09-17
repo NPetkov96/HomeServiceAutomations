@@ -20,7 +20,7 @@ namespace Extensions
 
                 if (string.IsNullOrWhiteSpace(logsDirectory) && !isContainer)
                 {
-                    using var db = new DataBaseContext();
+                    using var db = DataBaseContext.Create();
                     logsDirectory = db.Settings.FirstOrDefault(s => s.Name == "LogsPath")?.Value;
                 }
 

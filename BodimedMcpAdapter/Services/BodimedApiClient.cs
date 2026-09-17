@@ -38,6 +38,15 @@ public sealed class BodimedApiClient(
         {
             throw;
         }
+        catch (TaskCanceledException exception) when (!cancellationToken.IsCancellationRequested)
+        {
+            logger.LogWarning(
+                "Bodimed create-patient request timed out; its outcome is unknown.");
+            throw new BodimedApiException(
+                "Bodimed API response timed out; the operation outcome is unknown. Check patient history before retrying.",
+                null,
+                exception);
+        }
         catch (HttpRequestException exception)
         {
             logger.LogWarning("Bodimed create-patient request could not be completed.");

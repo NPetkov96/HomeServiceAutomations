@@ -10,7 +10,7 @@ namespace Operations.Ngrok
 
         public async Task Run()
         {
-            using (var db = new DataBaseContext())
+            using (var db = DataBaseContext.Create())
             {
                 var httpsPort = db.Settings.FirstOrDefault(w => w.Name == "PortHTTPs")!.Value;
 

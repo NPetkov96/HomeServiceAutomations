@@ -18,7 +18,7 @@ namespace Operations.ImotBg
 
         public async Task Run()
         {
-            using var db = new DataBaseContext();
+            using var db = DataBaseContext.Create();
 
             await _scraping.StartScraping(db);
             await _validation.ValidateData(db);

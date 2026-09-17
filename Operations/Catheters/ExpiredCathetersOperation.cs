@@ -16,7 +16,7 @@ namespace Operations.Catheters
         {
             var monthAgo = DateTime.Now.AddMonths(-1);
 
-            using var db = new DataBaseContext();
+            using var db = DataBaseContext.Create();
             var expiredCatheters = db.MedSestriCatheters
                 .Where(c => c.Date <= monthAgo && !c.IsChecked)
                 .ToList();
